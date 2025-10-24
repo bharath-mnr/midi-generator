@@ -1,78 +1,171 @@
-# ==========================================
-# ROOT LEVEL - MONOOREPO
-# ==========================================
+# ============================================
+# SECURITY - NEVER COMMIT THESE FILES
+# ============================================
 
-# OS
-.DS_Store
-Thumbs.db
-
-# IDEs
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Logs
-*.log
-
-# Secrets
+# Environment files
 .env
-.env.*
+.env.local
+.env.development
+.env.production
+.env.docker
+*.env
 !.env.example
+
+# Secrets and credentials
+secrets/
 *.pem
 *.key
 *.crt
+*.p12
 *.jks
 credentials.json
-service-account*.json
+serviceAccountKey.json
 
-# Docker (if used)
+# ============================================
+# BACKEND - NODE.JS
+# ============================================
+
+backend/node_modules/
+backend/.env
+backend/.env.local
+backend/npm-debug.log*
+backend/yarn-debug.log*
+backend/yarn-error.log*
+backend/public/generated/*
+!backend/public/generated/.gitkeep
+
+# ============================================
+# BACKEND - SPRING BOOT
+# ============================================
+
+backend-springboot/target/
+backend-springboot/.env
+backend-springboot/.env.local
+backend-springboot/.mvn/
+backend-springboot/mvnw
+backend-springboot/mvnw.cmd
+backend-springboot/*.log
+backend-springboot/.apt_generated
+backend-springboot/.classpath
+backend-springboot/.factorypath
+backend-springboot/.project
+backend-springboot/.settings/
+backend-springboot/.springBeans
+backend-springboot/.sts4-cache
+
+# ============================================
+# FRONTEND - REACT
+# ============================================
+
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.env
+frontend/.env.local
+frontend/.env.production
+frontend/.vite/
+frontend/vite.config.js.timestamp-*
+
+# ============================================
+# VST PLUGIN - JUCE
+# ============================================
+
+vst/build/
+vst/Builds/
+vst/.vs/
+vst/x64/
+vst/Debug/
+vst/Release/
+vst/*.user
+vst/*.suo
+vst/*.sdf
+vst/*.opensdf
+vst/*.vcxproj.filters
+vst/JuceLibraryCode/
+
+# ============================================
+# DATABASE
+# ============================================
+
+*.db
+*.sqlite
+*.sqlite3
+postgres-data/
+
+# ============================================
+# IDE & EDITORS
+# ============================================
+
+# VSCode
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json.example
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# JetBrains
+.fleet/
+
+# ============================================
+# OPERATING SYSTEM
+# ============================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# ============================================
+# LOGS & TEMP FILES
+# ============================================
+
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
+
+# ============================================
+# DOCKER
+# ============================================
+
 docker-compose.override.yml
+.dockerignore
 
-# Terraform (if used)
-.terraform/
-*.tfstate
-*.tfstate.backup
+# ============================================
+# MISC
+# ============================================
 
-# ==========================================
-# BACKEND (Node.js)
-# ==========================================
-/backend/node_modules/
-/backend/.env
-/backend/public/generated/*
-!/backend/public/generated/.gitkeep
-/backend/logs/
-
-# ==========================================
-# BACKEND (Spring Boot)
-# ==========================================
-/backend-springboot/target/
-/backend-springboot/build/
-/backend-springboot/.gradle/
-/backend-springboot/.idea/
-/backend-springboot/*.log
-/backend-springboot/*.db
-/backend-springboot/*.h2.db
-/backend-springboot/*.mv.db
-/backend-springboot/*.trace.db
-/backend-springboot/src/main/resources/application-*.properties
-!backend-springboot/src/main/resources/application.properties
-!backend-springboot/src/main/resources/application-test.properties
-
-# ==========================================
-# FRONTEND
-# ==========================================
-/frontend/node_modules/
-/frontend/dist/
-/frontend/.env
-/frontend/.env.local
-/frontend/.env.production.local
-/frontend/.env.development.local
-/frontend/.vite/
-
-# ==========================================
-# VST
-# ==========================================
-/vst/build/
-/vst/JUCE/
-/vst/.vscode/
+coverage/
+*.swp
+*.swo
+*.bak
+*.tmp
+*.cache
+.next/
