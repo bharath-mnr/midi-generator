@@ -1,0 +1,78 @@
+# ==========================================
+# ROOT LEVEL - MONOOREPO
+# ==========================================
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.jks
+credentials.json
+service-account*.json
+
+# Docker (if used)
+docker-compose.override.yml
+
+# Terraform (if used)
+.terraform/
+*.tfstate
+*.tfstate.backup
+
+# ==========================================
+# BACKEND (Node.js)
+# ==========================================
+/backend/node_modules/
+/backend/.env
+/backend/public/generated/*
+!/backend/public/generated/.gitkeep
+/backend/logs/
+
+# ==========================================
+# BACKEND (Spring Boot)
+# ==========================================
+/backend-springboot/target/
+/backend-springboot/build/
+/backend-springboot/.gradle/
+/backend-springboot/.idea/
+/backend-springboot/*.log
+/backend-springboot/*.db
+/backend-springboot/*.h2.db
+/backend-springboot/*.mv.db
+/backend-springboot/*.trace.db
+/backend-springboot/src/main/resources/application-*.properties
+!backend-springboot/src/main/resources/application.properties
+!backend-springboot/src/main/resources/application-test.properties
+
+# ==========================================
+# FRONTEND
+# ==========================================
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.env
+/frontend/.env.local
+/frontend/.env.production.local
+/frontend/.env.development.local
+/frontend/.vite/
+
+# ==========================================
+# VST
+# ==========================================
+/vst/build/
+/vst/JUCE/
+/vst/.vscode/

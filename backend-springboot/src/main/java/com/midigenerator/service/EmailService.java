@@ -1,0 +1,317 @@
+//midigenerator/service/EmailService.java
+package com.midigenerator.service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class EmailService {
+
+    private final JavaMailSender mailSender;
+
+    @Value("${app.email.from}")
+    private String fromEmail;
+
+    @Value("${app.frontend-url:http://localhost:5173}")
+    private String frontendUrl;
+
+    @Value("${app.name:MIDI Generator}")
+    private String appName;
+
+    public void sendVerificationEmail(String toEmail, String token) {
+        try {
+            log.info("📧 Preparing verification email for: {}", toEmail);
+
+            // ✅ FIX 1: Validate inputs
+            if (toEmail == null || toEmail.trim().isEmpty()) {
+                throw new IllegalArgumentException("Recipient email cannot be empty");
+            }
+
+            if (token == null || token.trim().isEmpty()) {
+                throw new IllegalArgumentException("Verification token cannot be empty");
+            }
+
+            String verificationLink = frontendUrl + "/verify-email?token=" + token;
+            // ✅ SECURITY FIX: Removed full token logging
+            log.info("🔗 Verification link generated for: {}", toEmail);
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            // ✅ FIX 2: Set from address properly
+            helper.setFrom(fromEmail, appName);
+            helper.setTo(toEmail);
+            helper.setSubject("Verify Your Email - " + appName);
+
+            // ✅ FIX 3: Set reply-to
+            helper.setReplyTo(fromEmail);
+
+            String htmlContent = buildVerificationEmailHtml(verificationLink);
+            helper.setText(htmlContent, true);
+
+            log.info("📤 Sending verification email to: {}", toEmail);
+            mailSender.send(message);
+            log.info("✅ Verification email sent successfully to: {}", toEmail);
+
+        } catch (MessagingException e) {
+            log.error("❌ MessagingException sending verification email to {}: {}", toEmail, e.getMessage());
+            log.error("Stack trace:", e);
+            throw new RuntimeException("Failed to send verification email: " + e.getMessage(), e);
+        } catch (Exception e) {
+            log.error("❌ Unexpected error sending verification email to {}: {}", toEmail, e.getMessage());
+            log.error("Stack trace:", e);
+            throw new RuntimeException("Failed to send verification email: " + e.getMessage(), e);
+        }
+    }
+
+    public void sendPasswordResetEmail(String toEmail, String token, String fullName) {
+        try {
+            log.info("📧 Preparing password reset email for: {}", toEmail);
+
+            // ✅ Validate inputs
+            if (toEmail == null || toEmail.trim().isEmpty()) {
+                throw new IllegalArgumentException("Recipient email cannot be empty");
+            }
+
+            if (token == null || token.trim().isEmpty()) {
+                throw new IllegalArgumentException("Reset token cannot be empty");
+            }
+
+            String resetLink = frontendUrl + "/reset-password?token=" + token;
+            // ✅ SECURITY FIX: Removed full token logging
+            log.info("🔗 Reset link generated for: {}", toEmail);
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(fromEmail, appName);
+            helper.setTo(toEmail);
+            helper.setSubject("Reset Your Password - " + appName);
+            helper.setReplyTo(fromEmail);
+
+            String htmlContent = buildPasswordResetEmailHtml(resetLink, fullName);
+            helper.setText(htmlContent, true);
+
+            log.info("📤 Sending password reset email to: {}", toEmail);
+            mailSender.send(message);
+            log.info("✅ Password reset email sent successfully to: {}", toEmail);
+
+        } catch (MessagingException e) {
+            log.error("❌ MessagingException sending password reset email to {}: {}", toEmail, e.getMessage());
+            log.error("Stack trace:", e);
+            throw new RuntimeException("Failed to send password reset email: " + e.getMessage(), e);
+        } catch (Exception e) {
+            log.error("❌ Unexpected error sending password reset email to {}: {}", toEmail, e.getMessage());
+            log.error("Stack trace:", e);
+            throw new RuntimeException("Failed to send password reset email: " + e.getMessage(), e);
+        }
+    }
+
+    private String buildVerificationEmailHtml(String verificationLink) {
+        return """
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    * { margin: 0; padding: 0; box-sizing: border-box; }
+                    body { 
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+                        line-height: 1.6; 
+                        color: #333;
+                        background-color: #f5f5f5;
+                    }
+                    .container { 
+                        max-width: 600px; 
+                        margin: 20px auto; 
+                        background-color: white;
+                        border-radius: 8px;
+                        overflow: hidden;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    }
+                    .header { 
+                        background-color: #1a1a1a; 
+                        color: white; 
+                        padding: 30px 20px; 
+                        text-align: center;
+                    }
+                    .header h1 { margin: 0; font-size: 24px; }
+                    .content { padding: 40px 30px; }
+                    .content h2 { color: #1a1a1a; margin-top: 0; }
+                    .button { 
+                        display: inline-block; 
+                        padding: 14px 32px; 
+                        background-color: #1a1a1a; 
+                        color: white !important; 
+                        text-decoration: none; 
+                        border-radius: 6px; 
+                        margin: 25px 0;
+                        font-weight: 600;
+                    }
+                    .link-box {
+                        word-break: break-all; 
+                        background-color: #f5f5f5; 
+                        padding: 15px; 
+                        border-radius: 4px;
+                        font-size: 12px;
+                        color: #666;
+                        margin: 20px 0;
+                    }
+                    .footer { 
+                        text-align: center; 
+                        font-size: 12px; 
+                        color: #666; 
+                        padding: 20px;
+                        background-color: #f9f9f9;
+                    }
+                    .warning {
+                        background-color: #fff3cd;
+                        border-left: 4px solid #ffc107;
+                        padding: 12px;
+                        margin: 20px 0;
+                        font-size: 14px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>🎵 MIDI Generator</h1>
+                    </div>
+                    <div class="content">
+                        <h2>Verify Your Email Address</h2>
+                        <p>Thank you for signing up! To start generating AI-powered music, please verify your email address by clicking the button below.</p>
+                        <p><strong>This link will expire in 24 hours.</strong></p>
+                        
+                        <center>
+                            <a href="%s" class="button">Verify Email Address</a>
+                        </center>
+                        
+                        <p style="margin-top: 30px;">Or copy and paste this link in your browser:</p>
+                        <div class="link-box">%s</div>
+                        
+                        <div class="warning">
+                            <strong>⚠️ Important:</strong> You won't be able to generate music until you verify your email.
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <p>If you didn't create this account, please ignore this email.</p>
+                        <p style="margin-top: 10px;">© 2025 MIDI Generator. All rights reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """.formatted(verificationLink, verificationLink);
+    }
+
+    private String buildPasswordResetEmailHtml(String resetLink, String fullName) {
+        String greeting = (fullName != null && !fullName.trim().isEmpty())
+                ? "Hi " + fullName + ","
+                : "Hi,";
+
+        return """
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    * { margin: 0; padding: 0; box-sizing: border-box; }
+                    body { 
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+                        line-height: 1.6; 
+                        color: #333;
+                        background-color: #f5f5f5;
+                    }
+                    .container { 
+                        max-width: 600px; 
+                        margin: 20px auto; 
+                        background-color: white;
+                        border-radius: 8px;
+                        overflow: hidden;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    }
+                    .header { 
+                        background-color: #1a1a1a; 
+                        color: white; 
+                        padding: 30px 20px; 
+                        text-align: center;
+                    }
+                    .header h1 { margin: 0; font-size: 24px; }
+                    .content { padding: 40px 30px; }
+                    .content h2 { color: #1a1a1a; margin-top: 0; }
+                    .button { 
+                        display: inline-block; 
+                        padding: 14px 32px; 
+                        background-color: #1a1a1a; 
+                        color: white !important; 
+                        text-decoration: none; 
+                        border-radius: 6px; 
+                        margin: 25px 0;
+                        font-weight: 600;
+                    }
+                    .link-box {
+                        word-break: break-all; 
+                        background-color: #f5f5f5; 
+                        padding: 15px; 
+                        border-radius: 4px;
+                        font-size: 12px;
+                        color: #666;
+                        margin: 20px 0;
+                    }
+                    .footer { 
+                        text-align: center; 
+                        font-size: 12px; 
+                        color: #666; 
+                        padding: 20px;
+                        background-color: #f9f9f9;
+                    }
+                    .warning {
+                        background-color: #fff3cd;
+                        border-left: 4px solid #ffc107;
+                        padding: 15px;
+                        margin: 20px 0;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>🎵 MIDI Generator</h1>
+                    </div>
+                    <div class="content">
+                        <h2>Password Reset Request</h2>
+                        <p>%s</p>
+                        <p>We received a request to reset your password. Click the button below to create a new password.</p>
+                        <p><strong>This link will expire in 1 hour.</strong></p>
+                        
+                        <center>
+                            <a href="%s" class="button">Reset Password</a>
+                        </center>
+                        
+                        <p style="margin-top: 30px;">Or copy and paste this link in your browser:</p>
+                        <div class="link-box">%s</div>
+                        
+                        <div class="warning">
+                            <strong>⚠️ Security Note:</strong> If you didn't request this password reset, please ignore this email or contact our support team. Your account is safe.
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <p>For security reasons, never share this link with anyone.</p>
+                        <p style="margin-top: 10px;">© 2025 MIDI Generator. All rights reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """.formatted(greeting, resetLink, resetLink);
+    }
+}

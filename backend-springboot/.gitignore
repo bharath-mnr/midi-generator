@@ -1,0 +1,258 @@
+# ==========================================
+# MAVEN
+# ==========================================
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# ==========================================
+# GRADLE
+# ==========================================
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+
+# ==========================================
+# IDEs
+# ==========================================
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### Eclipse ###
+.classpath
+.project
+.settings/
+bin/
+.metadata
+.recommenders
+.apt_generated
+.factorypath
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+nb-configuration.xml
+
+### VS Code ###
+.vscode/
+*.code-workspace
+
+# ==========================================
+# LOGS
+# ==========================================
+*.log
+logs/
+spring.log
+log/
+*.log.*
+
+# ==========================================
+# DATABASES
+# ==========================================
+*.db
+*.sqlite
+*.h2.db
+*.mv.db
+*.trace.db
+
+# ==========================================
+# ENVIRONMENT & SECRETS - ⚠️ CRITICAL SECTION
+# ==========================================
+# Environment files
+.env
+.env.*
+!.env.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+
+# Spring Boot property files with secrets
+application-local.properties
+application-dev.properties
+application-prod.properties
+application-secret.properties
+**/application-*.properties
+!**/application.properties
+!**/application-test.properties
+
+# Sensitive configuration
+config/application-local.yml
+config/application-dev.yml
+config/application-prod.yml
+secrets.yml
+secrets.properties
+
+# ==========================================
+# OPERATING SYSTEM
+# ==========================================
+### macOS ###
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+### Windows ###
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+### Linux ###
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ==========================================
+# GENERATED FILES
+# ==========================================
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# ==========================================
+# TEMPORARY FILES
+# ==========================================
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.cache
+*~
+.cache/
+
+# ==========================================
+# NODE.JS (if frontend in same repo)
+# ==========================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+.pnpm-debug.log*
+
+# ==========================================
+# SPRING BOOT SPECIFIC
+# ==========================================
+.factorypath
+.springBeans
+.sts4-cache
+HELP.md
+!**/src/main/**/HELP.md
+!**/src/test/**/HELP.md
+
+# ==========================================
+# TESTING
+# ==========================================
+*.retry
+.pytest_cache/
+coverage/
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+nosetests.xml
+coverage.xml
+*.cover
+application_test.properties
+junit-platform.properties
+
+# ==========================================
+# SECURITY & CREDENTIALS
+# ==========================================
+# SSL/TLS Certificates
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.truststore
+
+# API Keys & Tokens
+**/secrets/
+**/credentials/
+.credentials
+credentials.json
+token.json
+service-account*.json
+
+# AWS
+.aws/
+*.pem
+
+# ==========================================
+# DEPLOYMENT
+# ==========================================
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# ==========================================
+# MISC
+# ==========================================
+.attach_pid*
+replay_pid*
+hs_err_pid*
+
+# ==========================================
+# ALLOW THESE FILES (Safety Net)
+# ==========================================
+# Always allow example/template files
+!.env.example
+!application.properties.example
+!secrets.example.yml
+!config.example.json
