@@ -1,4 +1,4 @@
-//midigenerator/entity/VerificationToken.java
+
 package com.midigenerator.entity;
 
 import jakarta.persistence.*;
@@ -10,10 +10,11 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "verification_tokens", indexes = {
-    @Index(name = "idx_token", columnList = "token"),
-    @Index(name = "idx_token_type", columnList = "tokenType"),
-    @Index(name = "idx_expiry_date", columnList = "expiryDate"),
-    @Index(name = "idx_user_token_type", columnList = "user_id, tokenType")
+        @Index(name = "idx_token", columnList = "token", unique = true),              // ✅ FIXED: Made unique
+        @Index(name = "idx_token_type", columnList = "tokenType"),
+        @Index(name = "idx_expiry_date", columnList = "expiryDate"),
+        @Index(name = "idx_user_token_type", columnList = "user_id, tokenType"),
+        @Index(name = "idx_token_valid", columnList = "used, expiryDate")            // ✅ FIXED: Added composite for validation
 })
 @Data
 @NoArgsConstructor

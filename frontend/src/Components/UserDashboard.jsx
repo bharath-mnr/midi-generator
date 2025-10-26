@@ -1,8 +1,7 @@
 // frontend/src/Components/UserDashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { Globe, Monitor, Download, Trash2, Music } from 'lucide-react';
-
-const API_BASE_URL = import.meta.env.VITE_JAVA_API_URL || 'http://localhost:8080/api';
+import axiosInstance from '../services/axiosConfig'; // ✅ UPDATED: Use axiosInstance
 
 const UserDashboard = () => {
   const [generations, setGenerations] = useState([]);
@@ -16,27 +15,22 @@ const UserDashboard = () => {
 
   const fetchData = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-
-      const headers = {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      };
-
-      const statsResponse = await fetch(`${API_BASE_URL}/user/statistics`, { headers });
-      if (statsResponse.ok) {
-        const statsData = await statsResponse.json();
-        setStatistics(statsData);
+      // ✅ UPDATED: Use axiosInstance which handles authentication automatically
+      const statsResponse = await axiosInstance.get('/user/statistics');
+      if (statsResponse.data) {
+        setStatistics(statsResponse.data);
       }
 
-      const generationsResponse = await fetch(`${API_BASE_URL}/midi/generations?page=0&size=50`, { headers });
-      if (generationsResponse.ok) {
-        const genData = await generationsResponse.json();
-        setGenerations(genData.content || []);
+      const generationsResponse = await axiosInstance.get('/midi/generations?page=0&size=50');
+      if (generationsResponse.data) {
+        setGenerations(generationsResponse.data.content || []);
       }
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
+      if (error.response?.status === 401) {
+        // Handle unauthorized - token will be refreshed automatically by interceptor
+        console.log('Authentication required');
+      }
     } finally {
       setLoading(false);
     }

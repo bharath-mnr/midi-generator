@@ -1,4 +1,4 @@
-//midigenerator/entity/User.java
+
 package com.midigenerator.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -11,12 +11,16 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "users", indexes = {
-        @Index(name = "idx_email_verified", columnList = "emailVerified, isActive")
+        @Index(name = "idx_email", columnList = "email"),                         // ✅ FIXED: Added email index
+        @Index(name = "idx_email_verified", columnList = "emailVerified, isActive"),
+        @Index(name = "idx_subscription_tier", columnList = "subscriptionTier"),   // ✅ FIXED: Added tier index
+        @Index(name = "idx_last_generation", columnList = "lastGenerationDate")    // ✅ FIXED: Added generation date index
 })
 @Data
 @NoArgsConstructor
@@ -111,36 +115,31 @@ public class User {
         }
     }
 
-    // ✅ FIX: Enhanced daily reset check with proper date comparison
     private boolean isNewDay() {
         if (lastGenerationDate == null) {
             return true;
         }
 
-        LocalDate lastDate = lastGenerationDate.toLocalDate();
-        LocalDate today = LocalDate.now();
+        LocalDate lastDate = lastGenerationDate.atZone(ZoneId.of("UTC")).toLocalDate();
+        LocalDate today = LocalDateTime.now(ZoneId.of("UTC")).toLocalDate();
 
         return !lastDate.isEqual(today);
     }
 
-    // ✅ FIX: Reset counter at the start of each check
     private void resetDailyCountIfNeeded() {
         if (isNewDay()) {
             this.dailyGenerationCount = 0;
-            this.lastGenerationDate = LocalDateTime.now();
+            this.lastGenerationDate = LocalDateTime.now(ZoneId.of("UTC"));
         }
     }
 
     public boolean canGenerateMore() {
-        // ✅ FIX: Always reset if it's a new day BEFORE checking
         resetDailyCountIfNeeded();
 
-        // Check subscription expiry
-        if (subscriptionExpiryDate != null && subscriptionExpiryDate.isBefore(LocalDateTime.now())) {
+        if (subscriptionExpiryDate != null && subscriptionExpiryDate.isBefore(LocalDateTime.now(ZoneId.of("UTC")))) {
             subscriptionTier = SubscriptionTier.FREE;
         }
 
-        // Unlimited tier
         if (subscriptionTier.hasUnlimitedGenerations()) {
             return true;
         }
@@ -149,19 +148,21 @@ public class User {
     }
 
     public void incrementGenerationCount() {
-        // ✅ FIX: Reset if new day before incrementing
         resetDailyCountIfNeeded();
-
         dailyGenerationCount++;
-        lastGenerationDate = LocalDateTime.now();
+        lastGenerationDate = LocalDateTime.now(ZoneId.of("UTC"));
+    }
+
+    public void decrementGenerationCount() {
+        resetDailyCountIfNeeded();
+        this.dailyGenerationCount = Math.max(0, this.dailyGenerationCount - 1);
     }
 
     public int getRemainingGenerations() {
-        // Reset if new day before calculating
         resetDailyCountIfNeeded();
 
         if (subscriptionTier.hasUnlimitedGenerations()) {
-            return -1; // Unlimited
+            return -1;
         }
 
         return Math.max(0, subscriptionTier.getDailyLimit() - dailyGenerationCount);

@@ -1,7 +1,7 @@
+
 //midigenerator/scheduler/DailyLimitResetScheduler.java
 package com.midigenerator.scheduler;
 
-import com.midigenerator.entity.User;
 import com.midigenerator.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,11 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.time.ZoneId;
 
 /**
- * ✅ Scheduler to reset daily generation counts at midnight
- * Runs every day at 00:00:01 (1 second after midnight)
+ * ✅ Scheduler to reset daily generation counts at midnight UTC
+ * Runs once per day at 00:00:01 (1 second after midnight UTC)
+ *
+ * IMPORTANT: Only ONE method with the cron schedule to avoid duplicates
  */
 @Slf4j
 @Component
@@ -25,75 +27,73 @@ public class DailyLimitResetScheduler {
     private final UserRepository userRepository;
 
     /**
-     * Reset daily generation counts at midnight
+     * ✅ SINGLE method to reset daily generation counts
+     *
      * Cron: "second minute hour day month day-of-week"
-     * "1 0 0 * * *" = 00:00:01 every day
+     * "1 0 0 * * *" = 00:00:01 UTC every day
+     *
+     * Uses efficient single SQL UPDATE query instead of loading all users
      */
-    @Scheduled(cron = "1 0 0 * * *")
+    @Scheduled(cron = "1 0 0 * * *", zone = "UTC")
     @Transactional
     public void resetDailyGenerationCounts() {
         try {
-            log.info("🔄 Starting daily generation count reset...");
+            long startTime = System.currentTimeMillis();
+            LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
+            LocalDateTime startOfToday = now.toLocalDate().atStartOfDay();
 
-            LocalDateTime today = LocalDateTime.now();
-            LocalDate todayDate = today.toLocalDate();
+            log.info("🔄 Starting daily generation count reset at {}", now);
+            log.info("📅 Resetting counts for users with lastGenerationDate before {}", startOfToday);
 
-            // Find all users whose lastGenerationDate is before today
-            List<User> users = userRepository.findAll();
+            // ✅ Single efficient SQL UPDATE query
+            int resetCount = userRepository.resetDailyCountsForDateBefore(startOfToday);
 
-            int resetCount = 0;
-            for (User user : users) {
-                if (user.getLastGenerationDate() != null) {
-                    LocalDate lastGenDate = user.getLastGenerationDate().toLocalDate();
-
-                    // Reset if last generation was on a different day
-                    if (!lastGenDate.isEqual(todayDate)) {
-                        user.setDailyGenerationCount(0);
-                        resetCount++;
-                    }
-                }
-            }
+            long duration = System.currentTimeMillis() - startTime;
 
             if (resetCount > 0) {
-                userRepository.saveAll(users);
-                log.info("✅ Daily generation counts reset for {} users", resetCount);
+                log.info("✅ Daily generation counts reset for {} users in {}ms", resetCount, duration);
             } else {
-                log.info("ℹ️ No users needed daily count reset");
+                log.info("ℹ️ No users needed daily count reset (duration: {}ms)", duration);
             }
 
+            // ✅ Log summary for monitoring
+            logResetSummary(resetCount, duration);
+
         } catch (Exception e) {
-            log.error("❌ Error resetting daily generation counts: {}", e.getMessage(), e);
+            log.error("❌ Critical error resetting daily generation counts: {}", e.getMessage(), e);
+            // ⚠️ Consider sending alert notification here for production
         }
     }
 
     /**
-     * ✅ Alternative: Reset only active users who generated yesterday
-     * More efficient for large user bases
+     * ✅ Optional: Manual reset endpoint (for testing/admin)
+     * Called by AdminController only
      */
-    @Scheduled(cron = "1 0 0 * * *")
     @Transactional
-    public void resetDailyGenerationCountsEfficient() {
+    public int manualReset() {
         try {
-            log.info("🔄 Starting efficient daily generation count reset...");
-
-            LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
-
-            // Find users who have generations and whose last generation was before today
-            List<User> usersToReset = userRepository.findUsersToResetDailyCount(startOfToday);
-
-            if (!usersToReset.isEmpty()) {
-                for (User user : usersToReset) {
-                    user.setDailyGenerationCount(0);
-                }
-
-                userRepository.saveAll(usersToReset);
-                log.info("✅ Daily generation counts reset for {} active users", usersToReset.size());
-            } else {
-                log.info("ℹ️ No active users needed daily count reset");
-            }
-
+            log.info("🔧 Manual daily reset triggered");
+            LocalDateTime startOfToday = LocalDate.now(ZoneId.of("UTC")).atStartOfDay();
+            int resetCount = userRepository.resetDailyCountsForDateBefore(startOfToday);
+            log.info("✅ Manual reset complete: {} users", resetCount);
+            return resetCount;
         } catch (Exception e) {
-            log.error("❌ Error in efficient daily reset: {}", e.getMessage(), e);
+            log.error("❌ Manual reset failed: {}", e.getMessage(), e);
+            throw new RuntimeException("Manual reset failed: " + e.getMessage());
         }
+    }
+
+    /**
+     * ✅ Log detailed summary for monitoring/debugging
+     */
+    private void logResetSummary(int resetCount, long duration) {
+        log.info("═══════════════════════════════════════════════════════");
+        log.info("📊 Daily Reset Summary");
+        log.info("═══════════════════════════════════════════════════════");
+        log.info("   Users Reset: {}", resetCount);
+        log.info("   Duration: {}ms", duration);
+        log.info("   Status: {}", resetCount > 0 ? "SUCCESS" : "NO ACTION NEEDED");
+        log.info("   Timestamp: {}", LocalDateTime.now(ZoneId.of("UTC")));
+        log.info("═══════════════════════════════════════════════════════");
     }
 }

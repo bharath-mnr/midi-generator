@@ -1,9 +1,7 @@
 // frontend/src/Components/PricingPage.jsx
 import React, { useState, useEffect } from 'react';
 import { Check, Zap, Crown, Sparkles, ArrowRight } from 'lucide-react';
-import axios from 'axios';
-
-const API_BASE_URL = import.meta.env.VITE_JAVA_API_URL || 'http://localhost:8080/api';
+import axiosInstance from '../services/axiosConfig'; // Use axiosInstance
 
 const PricingPage = () => {
   const [plans, setPlans] = useState([]);
@@ -32,7 +30,8 @@ const PricingPage = () => {
 
   const fetchPricingPlans = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/pricing/plans`);
+      // ✅ UPDATED: Use axiosInstance
+      const response = await axiosInstance.get('/pricing/plans');
       setPlans(response.data);
     } catch (error) {
       console.error('Failed to fetch pricing plans:', error);

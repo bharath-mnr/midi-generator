@@ -1,8 +1,8 @@
-//midigenerator/controller/AdminController.java
 package com.midigenerator.controller;
 
 import com.midigenerator.entity.User;
 import com.midigenerator.repository.UserRepository;
+import com.midigenerator.security.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * ✅ Admin endpoints for testing and manual operations
- * IMPORTANT: In production, secure these endpoints with ROLE_ADMIN
- */
 @Slf4j
 @RestController
 @RequestMapping("/api/admin")
@@ -25,11 +21,8 @@ import java.util.Map;
 public class AdminController {
 
     private final UserRepository userRepository;
+    private final RateLimiter rateLimiter;  // ✅ NEW: Inject rate limiter
 
-    /**
-     * ✅ Manual trigger for daily reset - useful for testing
-     * Call this endpoint: POST http://localhost:8080/api/admin/reset-daily-counts
-     */
     @PostMapping("/reset-daily-counts")
     public ResponseEntity<Map<String, Object>> resetDailyGenerationCounts() {
         try {
@@ -84,9 +77,6 @@ public class AdminController {
         }
     }
 
-    /**
-     * ✅ Get current generation stats for all users
-     */
     @GetMapping("/generation-stats")
     public ResponseEntity<Map<String, Object>> getGenerationStats() {
         try {
@@ -105,11 +95,9 @@ public class AdminController {
             LocalDate today = LocalDate.now();
 
             for (User user : users) {
-                // Count by tier
                 tierCounts.put(user.getSubscriptionTier().name(),
                         tierCounts.get(user.getSubscriptionTier().name()) + 1);
 
-                // Count generations today
                 if (user.getLastGenerationDate() != null) {
                     LocalDate lastGenDate = user.getLastGenerationDate().toLocalDate();
                     if (lastGenDate.isEqual(today)) {
@@ -134,9 +122,6 @@ public class AdminController {
         }
     }
 
-    /**
-     * ✅ Get detailed info for a specific user
-     */
     @GetMapping("/user/{email}")
     public ResponseEntity<Map<String, Object>> getUserInfo(@PathVariable String email) {
         try {
@@ -158,6 +143,78 @@ public class AdminController {
 
         } catch (Exception e) {
             Map<String, Object> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    /**
+     * ✅ NEW: Get rate limiter statistics
+     */
+    @GetMapping("/rate-limiter/stats")
+    public ResponseEntity<Map<String, Object>> getRateLimiterStats() {
+        try {
+            Map<String, Object> stats = rateLimiter.getStatistics();
+            stats.put("timestamp", LocalDateTime.now());
+
+            log.info("📊 Rate limiter stats requested: {}", stats);
+
+            return ResponseEntity.ok(stats);
+        } catch (Exception e) {
+            log.error("❌ Error fetching rate limiter stats: {}", e.getMessage());
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.internalServerError().body(error);
+        }
+    }
+
+    /**
+     * ✅ NEW: Manually trigger rate limiter cleanup
+     */
+    @PostMapping("/rate-limiter/cleanup")
+    public ResponseEntity<Map<String, Object>> triggerRateLimiterCleanup() {
+        try {
+            log.info("🧹 Manual rate limiter cleanup triggered");
+
+            Map<String, Object> statsBefore = rateLimiter.getStatistics();
+            rateLimiter.cleanup();
+            Map<String, Object> statsAfter = rateLimiter.getStatistics();
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("statsBefore", statsBefore);
+            response.put("statsAfter", statsAfter);
+            response.put("timestamp", LocalDateTime.now());
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("❌ Error during manual cleanup: {}", e.getMessage());
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("error", e.getMessage());
+            return ResponseEntity.internalServerError().body(error);
+        }
+    }
+
+    /**
+     * ✅ NEW: Reset rate limit for specific user (emergency unlock)
+     */
+    @PostMapping("/rate-limiter/reset/{email}")
+    public ResponseEntity<Map<String, String>> resetRateLimit(@PathVariable String email) {
+        try {
+            log.info("🔓 Resetting rate limit for email: {}", email);
+
+            // Reset both email and user-based rate limits
+            rateLimiter.resetKey("email:" + email.toLowerCase());
+            rateLimiter.resetKey("user:" + email);
+
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Rate limit reset for: " + email);
+            response.put("timestamp", LocalDateTime.now().toString());
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
             error.put("error", e.getMessage());
             return ResponseEntity.badRequest().body(error);
         }

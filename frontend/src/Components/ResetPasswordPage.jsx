@@ -3,9 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { AlertCircle, Loader2, Lock, CheckCircle } from 'lucide-react';
 import authService from '../services/authService';
 import { getErrorMessage } from '../utils/errorUtils';
-
-
-
+import axiosInstance from '../services/axiosConfig'; // ✅ ADDED
 
 const ResetPasswordPage = ({ onNavigate, onSuccess }) => {
   const [token, setToken] = useState('');
@@ -60,31 +58,18 @@ const ResetPasswordPage = ({ onNavigate, onSuccess }) => {
     setError('');
 
     try {
-      const API_BASE_URL = import.meta.env.VITE_JAVA_API_URL || 'http://localhost:8080/api';
       console.log('🔄 Sending reset request with token:', token);
       
-      const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          token: token,
-          newPassword: formData.password,
-          confirmPassword: formData.confirmPassword
-        })
+      // ✅ UPDATED: Use axiosInstance
+      const response = await axiosInstance.post('/auth/reset-password', {
+        token: token,
+        newPassword: formData.password,
+        confirmPassword: formData.confirmPassword
       });
 
       console.log('📨 Response status:', response.status);
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ 
-          message: 'Failed to reset password' 
-        }));
-        throw new Error(errorData.message || `Server error: ${response.status}`);
-      }
-
-      const result = await response.json();
+      const result = response.data;
       console.log('✅ Password reset successful:', result);
       
       setSuccess(true);
@@ -106,11 +91,9 @@ const ResetPasswordPage = ({ onNavigate, onSuccess }) => {
         }, 3000);
       }
       
-
-      
     } catch (err) {
-    console.error('❌ Password reset error:', err);
-    setError(getErrorMessage(err, 'Failed to reset password. The link may be expired or already used.'));
+      console.error('❌ Password reset error:', err);
+      setError(getErrorMessage(err, 'Failed to reset password. The link may be expired or already used.'));
     } finally {
       setLoading(false);
     }

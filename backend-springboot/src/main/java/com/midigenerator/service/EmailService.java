@@ -1,6 +1,7 @@
-//midigenerator/service/EmailService.java
+
 package com.midigenerator.service;
 
+import com.midigenerator.security.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +17,7 @@ import jakarta.mail.internet.MimeMessage;
 public class EmailService {
 
     private final JavaMailSender mailSender;
+    private final RateLimiter rateLimiter; // ✅ FIX 3: Inject rate limiter
 
     @Value("${app.email.from}")
     private String fromEmail;
@@ -26,11 +28,22 @@ public class EmailService {
     @Value("${app.name:MIDI Generator}")
     private String appName;
 
+    // ✅ FIX 3: Rate limit - max 3 emails per hour per recipient
+    private void checkRateLimit(String toEmail) {
+        String rateLimitKey = "email:" + toEmail.toLowerCase();
+        if (!rateLimiter.isAllowed(rateLimitKey, 3, 3600)) {
+            log.warn("⚠️ Email rate limit exceeded for: {}", toEmail);
+            throw new RuntimeException("Too many email requests. Please try again in an hour.");
+        }
+    }
+
     public void sendVerificationEmail(String toEmail, String token) {
         try {
+            // ✅ Check rate limit BEFORE processing
+            checkRateLimit(toEmail);
+
             log.info("📧 Preparing verification email for: {}", toEmail);
 
-            // ✅ FIX 1: Validate inputs
             if (toEmail == null || toEmail.trim().isEmpty()) {
                 throw new IllegalArgumentException("Recipient email cannot be empty");
             }
@@ -40,18 +53,14 @@ public class EmailService {
             }
 
             String verificationLink = frontendUrl + "/verify-email?token=" + token;
-            // ✅ SECURITY FIX: Removed full token logging
             log.info("🔗 Verification link generated for: {}", toEmail);
 
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            // ✅ FIX 2: Set from address properly
             helper.setFrom(fromEmail, appName);
             helper.setTo(toEmail);
             helper.setSubject("Verify Your Email - " + appName);
-
-            // ✅ FIX 3: Set reply-to
             helper.setReplyTo(fromEmail);
 
             String htmlContent = buildVerificationEmailHtml(verificationLink);
@@ -74,9 +83,11 @@ public class EmailService {
 
     public void sendPasswordResetEmail(String toEmail, String token, String fullName) {
         try {
+            // ✅ Check rate limit BEFORE processing
+            checkRateLimit(toEmail);
+
             log.info("📧 Preparing password reset email for: {}", toEmail);
 
-            // ✅ Validate inputs
             if (toEmail == null || toEmail.trim().isEmpty()) {
                 throw new IllegalArgumentException("Recipient email cannot be empty");
             }
@@ -86,7 +97,6 @@ public class EmailService {
             }
 
             String resetLink = frontendUrl + "/reset-password?token=" + token;
-            // ✅ SECURITY FIX: Removed full token logging
             log.info("🔗 Reset link generated for: {}", toEmail);
 
             MimeMessage message = mailSender.createMimeMessage();

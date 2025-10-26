@@ -1,4 +1,4 @@
-//midigenerator/config/SecurityConfig.java
+
 package com.midigenerator.config;
 
 import com.midigenerator.security.*;
@@ -17,6 +17,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -58,40 +60,20 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // ✅ SECURE: Use only specific origins from configuration
         List<String> origins = Arrays.stream(allowedOrigins.split(","))
                 .map(String::trim)
                 .filter(origin -> !origin.isEmpty())
                 .toList();
 
         if (origins.isEmpty()) {
-            // Fallback to development defaults if no origins configured
             configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:3000"));
         } else {
             configuration.setAllowedOrigins(origins);
         }
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
-
-        // ✅ SECURE: Specify allowed headers explicitly instead of wildcard
-        configuration.setAllowedHeaders(Arrays.asList(
-                "Authorization",
-                "Content-Type",
-                "X-Requested-With",
-                "Accept",
-                "Origin",
-                "X-CSRF-TOKEN"
-        ));
-
-        configuration.setExposedHeaders(Arrays.asList(
-                "Content-Disposition",
-                "Content-Type",
-                "Content-Length",
-                "Authorization",
-                "X-CSRF-TOKEN"
-        ));
-
-        // ✅ SECURE: Allow credentials only with specific origins
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setExposedHeaders(Arrays.asList("X-XSRF-TOKEN"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
@@ -102,21 +84,34 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                // Disable CSRF for stateless JWT API
-                .csrf(csrf -> csrf.disable())
+        // ✅ CRITICAL FIX: Use proper CSRF configuration
+        CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
+        requestHandler.setCsrfRequestAttributeName(null); // ✅ Important for stateless apps
 
+        CookieCsrfTokenRepository tokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+        tokenRepository.setCookieName("XSRF-TOKEN");
+        tokenRepository.setHeaderName("X-XSRF-TOKEN");
+        tokenRepository.setCookiePath("/");
+
+        http
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(tokenRepository)
+                        .csrfTokenRequestHandler(requestHandler)
+                        // ✅ ONLY exempt endpoints that truly don't need CSRF
+                        .ignoringRequestMatchers(
+                                "/api/auth/**",
+                                "/h2-console/**"
+                        )
+                )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // ✅ Public endpoints
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/health").permitAll()
+                        .requestMatchers("/api/csrf").permitAll()
                         .requestMatchers("/api/pricing/plans").permitAll()
-
-                        // ✅ CRITICAL: Allow MIDI file downloads without authentication
                         .requestMatchers("/api/midi-files/**").permitAll()
-
                         .requestMatchers("/h2-console/**").permitAll()
 
                         // ✅ All other endpoints require authentication

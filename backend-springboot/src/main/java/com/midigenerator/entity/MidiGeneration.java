@@ -1,4 +1,4 @@
-//midigenerator/entity/MidiGeneration.java
+
 package com.midigenerator.entity;
 
 import jakarta.persistence.*;
@@ -14,7 +14,9 @@ import java.time.LocalDateTime;
         @Index(name = "idx_user_generated", columnList = "user_id, generated_at"),
         @Index(name = "idx_generated_at", columnList = "generated_at"),
         @Index(name = "idx_file_name", columnList = "file_name"),
-        @Index(name = "idx_midi_gen_source", columnList = "user_id, source")
+        @Index(name = "idx_user_source", columnList = "user_id, source"),  // ✅ FIXED: Added composite index
+        @Index(name = "idx_midi_gen_source", columnList = "source"),       // ✅ FIXED: Added source index
+        @Index(name = "idx_user_id", columnList = "user_id")               // ✅ FIXED: Added user_id index
 })
 @Data
 @NoArgsConstructor
@@ -56,8 +58,8 @@ public class MidiGeneration {
     @Column(columnDefinition = "TEXT")
     private String originalPrompt;
 
-    @Column(length = 10)
-    private String source = "web"; // ✅ NEW: "web" or "vst"
+    @Column(length = 10, nullable = false)  // ✅ FIXED: Made not null with default
+    private String source = "web";
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

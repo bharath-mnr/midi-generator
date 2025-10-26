@@ -1,4 +1,4 @@
-//midigenerator/entity/ChatHistory.java
+
 package com.midigenerator.entity;
 
 import jakarta.persistence.*;
@@ -14,7 +14,8 @@ import java.time.LocalDateTime;
         @Index(name = "idx_user_session", columnList = "user_id, session_id"),
         @Index(name = "idx_session_id", columnList = "session_id"),
         @Index(name = "idx_created_at", columnList = "created_at"),
-        @Index(name = "idx_chat_hist_source", columnList = "user_id, source")
+        @Index(name = "idx_user_source", columnList = "user_id, source"),  // ✅ FIXED: Added composite index
+        @Index(name = "idx_chat_hist_source", columnList = "source")       // ✅ FIXED: Added source index
 })
 @Data
 @NoArgsConstructor
@@ -51,8 +52,8 @@ public class ChatHistory {
     @Column(length = 500)
     private String midiUrl;
 
-    @Column(length = 10)
-    private String source = "web"; // ✅ NEW: "web" or "vst"
+    @Column(length = 10, nullable = false)  // ✅ FIXED: Made not null with default
+    private String source = "web";
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
