@@ -201,6 +201,7 @@ nosetests.xml
 coverage.xml
 *.cover
 application_test.properties
+application-test.properties
 junit-platform.properties
 
 # ==========================================

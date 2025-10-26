@@ -14,9 +14,9 @@ import java.time.LocalDateTime;
         @Index(name = "idx_user_generated", columnList = "user_id, generated_at"),
         @Index(name = "idx_generated_at", columnList = "generated_at"),
         @Index(name = "idx_file_name", columnList = "file_name"),
-        @Index(name = "idx_user_source", columnList = "user_id, source"),  // ✅ FIXED: Added composite index
-        @Index(name = "idx_midi_gen_source", columnList = "source"),       // ✅ FIXED: Added source index
-        @Index(name = "idx_user_id", columnList = "user_id")               // ✅ FIXED: Added user_id index
+        @Index(name = "idx_user_source", columnList = "user_id, source"),  
+        @Index(name = "idx_midi_gen_source", columnList = "source"),      
+        @Index(name = "idx_user_id", columnList = "user_id")            
 })
 @Data
 @NoArgsConstructor
