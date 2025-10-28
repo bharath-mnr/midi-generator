@@ -15,7 +15,6 @@ const EmailVerificationPage = ({ onNavigate }) => {
   useEffect(() => {
     // ✅ FIX: Skip if already verified
     if (hasVerified.current) {
-      console.log('⏭️ Verification already attempted, skipping...');
       return;
     }
 
@@ -27,10 +26,6 @@ const EmailVerificationPage = ({ onNavigate }) => {
       const urlParams = new URLSearchParams(window.location.search);
       const token = urlParams.get('token');
 
-      console.log('🔍 Full URL:', window.location.href);
-      console.log('🔍 Search params:', window.location.search);
-      console.log('🔍 Token extracted:', token);
-
       if (!token || token.trim() === '') {
         console.error('❌ No token in URL');
         setStatus('error');
@@ -39,14 +34,11 @@ const EmailVerificationPage = ({ onNavigate }) => {
       }
 
       try {
-        console.log('📤 Sending verification request...');
         // ✅ UPDATED: Use axiosInstance
         const response = await axiosInstance.post(
           '/auth/verify-email',
           { token: token.trim() }
         );
-
-        console.log('✅ Response:', response.data);
 
         if (response.data.verified === true) {
           setStatus('success');

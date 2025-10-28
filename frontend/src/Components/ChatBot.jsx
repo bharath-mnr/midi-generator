@@ -1273,7 +1273,6 @@ const extractBarCount = (text) => {
   if (match1) {
     const count = parseInt(match1[1]);
     if (count > 0 && count <= 500) {
-      console.log('📊 Extracted bar count from message:', count);
       return count;
     }
   }
@@ -1283,7 +1282,6 @@ const extractBarCount = (text) => {
   if (match2) {
     const count = parseInt(match2[1]);
     if (count > 0 && count <= 500) {
-      console.log('📊 Extracted bar count from message:', count);
       return count;
     }
   }
@@ -1380,20 +1378,18 @@ const ChatBot = ({ isAuthenticated, user, onOpenAuth, onNavigate, onLogout }) =>
   const fetchUserProfile = async () => {
     try {
       if (!authService.isAuthenticated()) {
-        console.log('⚠️ Not authenticated, skipping profile fetch');
         return;
       }
-      
-      console.log('📡 Fetching user profile...');
+
       const response = await axiosInstance.get('/user/profile');
       const profileData = response.data;
       
-      console.log('✅ Profile received:', {
-        email: profileData.email,
-        emailVerified: profileData.emailVerified,
-        remainingGenerations: profileData.remainingGenerations,
-        dailyCount: profileData.dailyGenerationCount
-      });
+      // console.log('✅ Profile received:', {
+      //   email: profileData.email,
+      //   emailVerified: profileData.emailVerified,
+      //   remainingGenerations: profileData.remainingGenerations,
+      //   dailyCount: profileData.dailyGenerationCount
+      // });
       
       setUserProfile(profileData);
       
@@ -1401,10 +1397,10 @@ const ChatBot = ({ isAuthenticated, user, onOpenAuth, onNavigate, onLogout }) =>
       setEmailVerified(isVerified);
       setShowVerificationBanner(!isVerified && isAuthenticated);
       
-      console.log('📧 Verification status updated:', {
-        emailVerified: isVerified,
-        showBanner: !isVerified && isAuthenticated
-      });
+      // console.log('📧 Verification status updated:', {
+      //   emailVerified: isVerified,
+      //   showBanner: !isVerified && isAuthenticated
+      // });
       
     } catch (error) {
       console.error('❌ Failed to fetch profile:', error);
@@ -1482,7 +1478,6 @@ const ChatBot = ({ isAuthenticated, user, onOpenAuth, onNavigate, onLogout }) =>
     setResendMessage('');
     
     try {
-      console.log('📧 Resending verification email...');
       
       const response = await axiosInstance.post('/auth/resend-verification', {
         email: user?.email
@@ -1570,11 +1565,11 @@ const ChatBot = ({ isAuthenticated, user, onOpenAuth, onNavigate, onLogout }) =>
           return;
         }
 
-        console.log('📁 MIDI file loaded:', {
-          name: file.name,
-          size: `${(file.size / 1024).toFixed(1)}KB`,
-          base64Length: base64Data.length
-        });
+        // console.log('📁 MIDI file loaded:', {
+        //   name: file.name,
+        //   size: `${(file.size / 1024).toFixed(1)}KB`,
+        //   base64Length: base64Data.length
+        // });
         
         setUploadedMidi({
           fileName: file.name,
@@ -1632,7 +1627,6 @@ const ChatBot = ({ isAuthenticated, user, onOpenAuth, onNavigate, onLogout }) =>
     }
     
     if (!window._firstRequestMade) {
-    console.log('⏳ First request - ensuring CSRF readiness...');
     await new Promise(resolve => setTimeout(resolve, 500));
     window._firstRequestMade = true;
     }

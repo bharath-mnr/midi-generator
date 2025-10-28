@@ -20,9 +20,6 @@ const ResetPasswordPage = ({ onNavigate, onSuccess }) => {
     const params = new URLSearchParams(window.location.search);
     const resetToken = params.get('token');
     
-    console.log('🔐 Full URL:', window.location.href);
-    console.log('🔐 Search params:', window.location.search);
-    console.log('🔐 Reset token from URL:', resetToken);
     
     if (!resetToken || resetToken.trim() === '') {
       setError('Invalid reset link. No token provided.');
@@ -58,7 +55,6 @@ const ResetPasswordPage = ({ onNavigate, onSuccess }) => {
     setError('');
 
     try {
-      console.log('🔄 Sending reset request with token:', token);
       
       // ✅ UPDATED: Use axiosInstance
       const response = await axiosInstance.post('/auth/reset-password', {
@@ -67,10 +63,7 @@ const ResetPasswordPage = ({ onNavigate, onSuccess }) => {
         confirmPassword: formData.confirmPassword
       });
 
-      console.log('📨 Response status:', response.status);
-
       const result = response.data;
-      console.log('✅ Password reset successful:', result);
       
       setSuccess(true);
       

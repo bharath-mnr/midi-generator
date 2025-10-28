@@ -647,14 +647,11 @@ const AuthModal = ({ mode, onClose, onSuccess, onSwitchMode }) => {
       let data;
 
       if (isSignup) {
-        console.log('📝 Attempting signup for:', formData.email);
         data = await authService.signup(
           formData.email,
           formData.password,
           formData.fullName
         );
-        console.log('✅ Signup response:', data);
-        
         setMessage('✅ Account created! Please check your email to verify before generating music.');
         setShowResendOption(true); // Show resend option after signup
         
@@ -662,9 +659,7 @@ const AuthModal = ({ mode, onClose, onSuccess, onSwitchMode }) => {
           onSuccess(data);
         }, 3000);
       } else if (isLogin) {
-        console.log('🔐 Attempting login for:', formData.email);
         data = await authService.login(formData.email, formData.password);
-        console.log('✅ Login response:', data);
         
         if (data.emailVerified === false) {
           setMessage('⚠️ Please verify your email. Check your inbox!');
@@ -676,7 +671,6 @@ const AuthModal = ({ mode, onClose, onSuccess, onSwitchMode }) => {
           onSuccess(data);
         }
       } else if (isForgotPassword) {
-        console.log('📧 Sending password reset for:', formData.email);
         const response = await axiosInstance.post('/auth/forgot-password', {
           email: formData.email
         });
@@ -685,7 +679,6 @@ const AuthModal = ({ mode, onClose, onSuccess, onSwitchMode }) => {
         setMessage('✅ ' + result.message + ' Check your inbox and spam folder.');
         setFormData({ ...formData, email: '' });
       } else if (isResetPassword) {
-        console.log('🔒 Resetting password');
         const response = await axiosInstance.post('/auth/reset-password', {
           token: resetToken,
           newPassword: formData.password,

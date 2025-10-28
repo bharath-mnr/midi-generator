@@ -55,12 +55,10 @@ const App = () => {
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        console.log('🚀 Initializing application...');
         
         // Block app startup until CSRF is ready
         await ensureCsrfReady();
         
-        console.log('✅ Application ready to render');
         setAppReady(true);
       } catch (error) {
         console.error('❌ App initialization failed:', error);
@@ -103,7 +101,6 @@ const App = () => {
         const stateUserString = JSON.stringify(user);
         
         if (currentUserString !== stateUserString) {
-          console.log('🔄 User data updated:', currentUser);
           setUser(currentUser);
         }
       }

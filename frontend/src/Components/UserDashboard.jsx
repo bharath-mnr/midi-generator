@@ -29,7 +29,6 @@ const UserDashboard = () => {
       console.error('Failed to fetch dashboard data:', error);
       if (error.response?.status === 401) {
         // Handle unauthorized - token will be refreshed automatically by interceptor
-        console.log('Authentication required');
       }
     } finally {
       setLoading(false);

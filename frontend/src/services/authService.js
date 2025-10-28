@@ -50,13 +50,11 @@ class AuthService {
     }
 
     try {
-      console.log('🔄 Refreshing access token...');
       const response = await axiosInstance.post('/auth/refresh', {
         refreshToken
       });
 
       this.saveTokens(response.data);
-      console.log('✅ Access token refreshed successfully');
       return response.data.token;
     } catch (error) {
       console.error('❌ Token refresh failed:', error);

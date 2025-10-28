@@ -43,7 +43,7 @@ const initializeCsrf = async () => {
     
     const token = getCsrfToken();
     if (token) {
-      console.log('✅ CSRF token found:', token.substring(0, 20) + '...');
+      console.log('✅ CSRF token found:');
     } else {
       console.warn('⚠️ CSRF token not found after initialization');
     }
