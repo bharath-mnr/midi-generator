@@ -91,6 +91,13 @@
 			<version>24.3.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.sendgrid</groupId>
+			<artifactId>sendgrid-java</artifactId>
+			<version>4.10.2</version>
+		</dependency>
+
+
 		<!-- For better email template handling (optional but recommended) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
