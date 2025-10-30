@@ -137,9 +137,7 @@
 
 
 
-// backend/src/main/java/com/midigenerator/config/SecurityConfig.java
-// ✅ FIXED FOR VERCEL (Frontend) + RENDER (Backend) - Cross-Origin Setup
-
+// ✅ FIXED SecurityConfig with proper CSRF for cross-origin (Vercel + Render)
 package com.midigenerator.config;
 
 import com.midigenerator.security.*;
@@ -214,7 +212,7 @@ public class SecurityConfig {
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setExposedHeaders(Arrays.asList("X-XSRF-TOKEN"));
+        configuration.setExposedHeaders(Arrays.asList("X-XSRF-TOKEN", "Set-Cookie"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
@@ -225,40 +223,50 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        // ✅ CRITICAL FIX: Proper CSRF setup for cross-origin
         CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
-        requestHandler.setCsrfRequestAttributeName(null);
+        requestHandler.setCsrfRequestAttributeName("_csrf");
 
-        // ✅ CRITICAL FIX FOR VERCEL + RENDER CROSS-ORIGIN
         CookieCsrfTokenRepository tokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
         tokenRepository.setCookieName("XSRF-TOKEN");
         tokenRepository.setHeaderName("X-XSRF-TOKEN");
         tokenRepository.setCookiePath("/");
-        
-        // ✅ FIX: Configure cookie for cross-origin (Vercel → Render)
+
+        // ✅ FIX: Critical cookie settings for Vercel → Render
         tokenRepository.setCookieCustomizer(cookie -> {
-            cookie.sameSite("None");      // CRITICAL: Allow cross-origin
-            cookie.secure(true);          // CRITICAL: HTTPS only (both Vercel & Render use HTTPS)
-            cookie.domain(null);          // Don't restrict domain (allows Vercel to send to Render)
+            cookie.sameSite("None");       // MUST be None for cross-origin
+            cookie.secure(true);           // MUST be true (both use HTTPS)
+            cookie.maxAge(3600);           // 1 hour expiry
+            cookie.path("/");
+            // Don't set domain - let browser handle it
         });
 
         http
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(tokenRepository)
                         .csrfTokenRequestHandler(requestHandler)
+                        // ✅ Only exempt public endpoints
                         .ignoringRequestMatchers(
-                                "/api/auth/**",      // Auth endpoints don't need CSRF
+                                "/api/auth/login",
+                                "/api/auth/signup",
+                                "/api/auth/refresh",
+                                "/api/health",
+                                "/api/pricing/plans",
                                 "/h2-console/**"
                         )
                 )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Public endpoints
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/health").permitAll()
                         .requestMatchers("/api/csrf").permitAll()
                         .requestMatchers("/api/pricing/plans").permitAll()
                         .requestMatchers("/api/midi-files/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
+
+                        // All other endpoints require authentication
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
