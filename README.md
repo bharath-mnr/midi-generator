@@ -20,8 +20,8 @@
 
 <!-- Row 1: Frontend 4 full width (same style as row 2) -->
 <p align="center">
-  <a href="images/frontend_1.png" target="_blank">
-    <img src="images/frontend_1.png" alt="Chat Bot" width="98%"/>
+  <a href="images/frontend.png" target="_blank">
+    <img src="images/frontend.png" alt="Chat Bot" width="98%"/>
   </a>
 </p>
 
