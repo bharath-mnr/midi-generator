@@ -168,8 +168,6 @@
 
 
 // frontend/src/services/axiosConfig.js
-// ✅ SIMPLIFIED: No CSRF handling (JWT authentication only)
-
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_JAVA_API_URL || 'http://localhost:8080/api';
@@ -177,10 +175,10 @@ const API_BASE_URL = import.meta.env.VITE_JAVA_API_URL || 'http://localhost:8080
 const axiosInstance = axios.create({
   baseURL: `${API_BASE_URL}`,
   timeout: 30000,
-  withCredentials: false, // ✅ Not needed without CSRF
+  withCredentials: false, // ✅ No cookies needed
 });
 
-// ✅ Simple Request Interceptor - JWT only
+// ✅ Request Interceptor - JWT only
 axiosInstance.interceptors.request.use(
   (config) => {
     console.log(`🔵 [${config.method?.toUpperCase()}] ${config.url}`);
@@ -199,14 +197,13 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// ✅ Simple Response Interceptor
+// ✅ Response Interceptor
 axiosInstance.interceptors.response.use(
   (response) => {
     console.log(`✅ [${response.config.method?.toUpperCase()}] ${response.config.url} - ${response.status}`);
     return response;
   },
   async (error) => {
-    // Log error details
     if (error.response) {
       console.error(`❌ [${error.config?.method?.toUpperCase()}] ${error.config?.url} - ${error.response.status}`, error.response.data);
     } else if (error.request) {
@@ -219,9 +216,9 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-// ✅ Simplified - no CSRF initialization needed
+// ✅ No CSRF initialization needed
 export const ensureCsrfReady = async () => {
-  console.log('✅ No CSRF needed - using JWT authentication');
+  console.log('✅ Using JWT authentication - no CSRF needed');
   return Promise.resolve();
 };
 
