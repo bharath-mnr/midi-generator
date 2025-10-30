@@ -259,12 +259,12 @@
 
 // frontend/src/App.jsx
 import React, { useState, useEffect, Suspense } from 'react';
-import ChatBot from './components/ChatBot';
-import UserDashboard from './components/UserDashboard';
-import PricingPage from './components/PricingPage';
-import AuthModal from './components/AuthModal';
-import EmailVerificationPage from './components/EmailVerificationPage';
-import ResetPasswordPage from './components/ResetPasswordPage';
+import ChatBot from './Components/ChatBot';
+import UserDashboard from './Components/UserDashboard';
+import PricingPage from './Components/PricingPage';
+import AuthModal from './Components/AuthModal';
+import EmailVerificationPage from './Components/EmailVerificationPage';
+import ResetPasswordPage from './Components/ResetPasswordPage';
 import authService from './services/authService';
 
 // ✅ REMOVED: import { ensureCsrfReady } from './services/axiosConfig';
