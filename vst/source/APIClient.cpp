@@ -330,7 +330,7 @@
 #include "APIClient.h"
 
 SimpleAPIClient::SimpleAPIClient()
-    : baseURL("http://localhost:8080/api")
+    : baseURL("https://midi-generator-backend.onrender.com/api")
 {
 }
 
@@ -527,7 +527,7 @@ SimpleAPIClient::GenerationResponse SimpleAPIClient::generateMidi(const Generati
                     std::unique_ptr<juce::InputStream> midiStream = midiFileUrl.createInputStream(
                         juce::URL::InputStreamOptions(juce::URL::ParameterHandling::inAddress)
                             .withExtraHeaders("Authorization: Bearer " + authToken)
-                            .withConnectionTimeoutMs(30000)
+                            .withConnectionTimeoutMs(45000)
                     );
                     
                     if (midiStream != nullptr)

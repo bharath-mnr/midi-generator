@@ -18,37 +18,20 @@
 
 ## 📸 Gallery
 
-<!-- Row 1: Website Screenshots (side-by-side) -->
+<!-- Row 1: Frontend 4 full width (same style as row 2) -->
 <p align="center">
   <a href="images/frontend_1.png" target="_blank">
-    <img src="images/frontend_1.png" alt="Homepage – Generator Interface" width="49%"/>
-  </a>
-  <a href="images/frontend_2.png" target="_blank">
-    <img src="images/frontend_2.png" alt="Dashboard – Generation History" width="49%"/>
+    <img src="images/frontend_1.png" alt="Chat Bot" width="98%"/>
   </a>
 </p>
 
-<!-- Row 2: Frontend 3 full width -->
-<p align="center">
-  <a href="images/frontend_3.png" target="_blank">
-    <img src="images/frontend_3.png" alt="Pricing & Upgrade" width="98%"/>
-  </a>
-</p>
-
-<!-- Row 3: VST Screenshots (side-by-side) -->
+<!-- Row 2: VST Screenshots (side-by-side) -->
 <p align="center">
   <a href="images/vst_1.png" target="_blank">
     <img src="images/vst_1.png" alt="VST3 – Login Screen" width="49%"/>
   </a>
   <a href="images/vst_2.png" target="_blank">
     <img src="images/vst_2.png" alt="VST3 – Generation Panel" width="49%"/>
-  </a>
-</p>
-
-<!-- Row 4: Frontend 4 full width (same style as row 2) -->
-<p align="center">
-  <a href="images/frontend_4.png" target="_blank">
-    <img src="images/frontend_4.png" alt="Extra Feature Screen" width="98%"/>
   </a>
 </p>
 

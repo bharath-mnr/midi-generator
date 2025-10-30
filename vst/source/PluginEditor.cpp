@@ -122,7 +122,7 @@ void MidiGeneratorEditor::setupLoginScreen()
     signupButton.setColour(juce::TextButton::buttonColourId, cardColor);
     signupButton.setColour(juce::TextButton::textColourOnId, textColor);
     signupButton.onClick = [this] { 
-        juce::URL("http://localhost:5173/signup").launchInDefaultBrowser();
+        juce::URL("https://midi-generator-seven.vercel.app").launchInDefaultBrowser();
     };
     loginScreen.addAndMakeVisible(signupButton);
     
@@ -271,7 +271,7 @@ void MidiGeneratorEditor::setupMainScreen()
     dashboardButton.setColour(juce::TextButton::buttonColourId, primaryColor);
     dashboardButton.setColour(juce::TextButton::textColourOnId, textColor);
     dashboardButton.onClick = [this] { 
-        juce::URL("http://localhost:5173/dashboard").launchInDefaultBrowser();
+        juce::URL("https://midi-generator-seven.vercel.app/dashboard").launchInDefaultBrowser();
     };
     mainScreen.addAndMakeVisible(dashboardButton);
 }
