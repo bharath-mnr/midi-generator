@@ -1626,10 +1626,6 @@ const ChatBot = ({ isAuthenticated, user, onOpenAuth, onNavigate, onLogout }) =>
       return;
     }
     
-    if (!window._firstRequestMade) {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    window._firstRequestMade = true;
-    }
 
     const userMessage = {
       id: Date.now(),

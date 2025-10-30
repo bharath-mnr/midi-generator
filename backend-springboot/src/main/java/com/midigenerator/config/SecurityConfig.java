@@ -290,7 +290,7 @@
 
 
 
-// ✅ FIXED SecurityConfig with proper CSRF for cross-origin (Vercel + Render)
+// backend/src/main/java/com/midigenerator/config/SecurityConfig.java
 package com.midigenerator.config;
 
 import com.midigenerator.security.*;
@@ -309,8 +309,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -365,8 +363,7 @@ public class SecurityConfig {
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setExposedHeaders(Arrays.asList("X-XSRF-TOKEN", "Set-Cookie"));
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(false); // ✅ Changed to false - no cookies needed
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -376,50 +373,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // ✅ CRITICAL FIX: Proper CSRF setup for cross-origin
-        CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
-        requestHandler.setCsrfRequestAttributeName("_csrf");
-
-        CookieCsrfTokenRepository tokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
-        tokenRepository.setCookieName("XSRF-TOKEN");
-        tokenRepository.setHeaderName("X-XSRF-TOKEN");
-        tokenRepository.setCookiePath("/");
-
-        // ✅ FIX: Critical cookie settings for Vercel → Render
-        tokenRepository.setCookieCustomizer(cookie -> {
-            cookie.sameSite("None");       // MUST be None for cross-origin
-            cookie.secure(true);           // MUST be true (both use HTTPS)
-            cookie.maxAge(3600);           // 1 hour expiry
-            cookie.path("/");
-            // Don't set domain - let browser handle it
-        });
-
         http
-                .csrf(csrf -> csrf
-                        .csrfTokenRepository(tokenRepository)
-                        .csrfTokenRequestHandler(requestHandler)
-                        // ✅ Only exempt public endpoints
-                        .ignoringRequestMatchers(
-                                "/api/auth/login",
-                                "/api/auth/signup",
-                                "/api/auth/refresh",
-                                "/api/health",
-                                "/api/pricing/plans",
-                                "/h2-console/**"
-                        )
-                )
+                // ✅ DISABLE CSRF - using JWT authentication
+                .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/health").permitAll()
-                        .requestMatchers("/api/csrf").permitAll()
                         .requestMatchers("/api/pricing/plans").permitAll()
                         .requestMatchers("/api/midi-files/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
-
-                        // All other endpoints require authentication
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
