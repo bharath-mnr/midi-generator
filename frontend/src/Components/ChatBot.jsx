@@ -3369,7 +3369,7 @@ const ChatBot = ({ isAuthenticated, user, onOpenAuth, onNavigate, onLogout }) =>
       return "How should I transform this MIDI?";
     }
     
-    return "Describe your music (e.g., 'calm piano melody, 16 bars')";
+    return "Describe your music idea...";
   };
 
   const FileUploadButton = () => {
