@@ -225,10 +225,7 @@ Horizontal Scalability: Stateless Node bridge + shared-nothing Java instances be
 ## 🎬 Reference Demo Track  
 The orchestral build-up below was generated with the prompt shown earlier.  
 
-<video src="https://raw.githubusercontent.com/bharath-mnr/midi-generator/main/assets/video.mp4" 
-       controls 
-       width="100%">
-</video>
+<iframe width="1296" height="729" src="https://www.youtube.com/embed/kKulnGoYf9c" title="video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 4/4
 Tempo: 85
