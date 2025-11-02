@@ -800,7 +800,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ---
 
 <p align="center">
-  <strong>Made with ❤️ and AI</strong>
+  <strong>Made with ❤️</strong>
   <br>
   <sub>Enjoy composing! 🎼</sub>
 </p>
