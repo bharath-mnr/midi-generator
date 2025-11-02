@@ -7,6 +7,7 @@ import AuthModal from './Components/AuthModal';
 import EmailVerificationPage from './Components/EmailVerificationPage';
 import ResetPasswordPage from './Components/ResetPasswordPage';
 import authService from './services/authService';
+import { wakeNodeSilently } from './utils/nodeWakeUp';
 
 // ✅ REMOVED: import { ensureCsrfReady } from './services/axiosConfig';
 
@@ -52,6 +53,10 @@ const App = () => {
   const [user, setUser] = useState(authService.getCurrentUser());
 
   // ✅ REMOVED: All CSRF initialization code
+
+  useEffect(() => {
+    wakeNodeSilently(); // ← silent ping once per tab
+  }, []);
 
   useEffect(() => {
     const path = window.location.pathname.substring(1) || 'Generator';

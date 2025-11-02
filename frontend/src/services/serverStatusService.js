@@ -1,3 +1,5 @@
+// frontend/src/services/serverStatusService.js
+
 class ServerStatusService {
   constructor(apiUrl) {
     this.apiUrl = apiUrl;

@@ -3347,7 +3347,7 @@ const ChatBot = ({ isAuthenticated, user, onOpenAuth, onNavigate, onLogout }) =>
         const retryAfter = error.response?.headers['retry-after'] || '60';
         addErrorMessage(`⏳ Too many requests. Please wait ${retryAfter} seconds and try again.`);
       } else if (error.response?.status === 500) {
-        addErrorMessage('⚠️ Server error. Our team has been notified. Please try again in a few moments.');
+        addErrorMessage('⚠️ Server error. Server is waking up. Please try again in a few moments.');
       } else if (error.response?.status === 503) {
         addErrorMessage('🔧 Service temporarily unavailable. Please try again in a few minutes.');
       } else if (error.response?.data?.message?.includes('verify your email')) {
