@@ -25,6 +25,19 @@
   </a>
 </p>
 
+<p align="center">
+  <a href="images/dashboard.png" target="_blank">
+    <img src="images/dashboard.png" alt="dashboard" width="98%"/>
+  </a>
+</p>
+
+<p align="center">
+  <a href="images/vst_download.png" target="_blank">
+    <img src="images/vst_download.png" alt="dashboard" width="98%"/>
+  </a>
+</p>
+
+
 <!-- Row 2: Mobile Screenshots (vertical) -->
 <p align="center">
   <a href="images/mobile_1.jpg" target="_blank">
