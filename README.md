@@ -30,8 +30,8 @@
   <a href="images/mobile_1.jpg" target="_blank">
     <img src="images/mobile_1.jpg" alt="Mobile Screen 1" width="32%"/>
   </a>
-  <a href="images/mobile_2.jpg" target="_blank">
-    <img src="images/mobile_2.jpg" alt="Mobile Screen 2" width="32%"/>
+  <a href="images/mobile_2.1.jpg" target="_blank">
+    <img src="images/mobile_2.1.jpg" alt="Mobile Screen 2" width="32%"/>
   </a>
   <a href="images/mobile_3.jpg" target="_blank">
     <img src="images/mobile_3.jpg" alt="Mobile Screen 3" width="32%"/>
