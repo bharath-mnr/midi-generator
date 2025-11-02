@@ -25,7 +25,20 @@
   </a>
 </p>
 
-<!-- Row 2: VST Screenshots (side-by-side) -->
+<!-- Row 2: Mobile Screenshots (vertical) -->
+<p align="center">
+  <a href="images/mobile_1.png" target="_blank">
+    <img src="images/mobile_1.png" alt="Mobile Screen 1" width="32%"/>
+  </a>
+  <a href="images/mobile_2.png" target="_blank">
+    <img src="images/mobile_2.png" alt="Mobile Screen 2" width="32%"/>
+  </a>
+  <a href="images/mobile_3.png" target="_blank">
+    <img src="images/mobile_3.png" alt="Mobile Screen 3" width="32%"/>
+  </a>
+</p>
+
+<!-- Row 3: VST Screenshots (side-by-side) -->
 <p align="center">
   <a href="images/vst_1.png" target="_blank">
     <img src="images/vst_1.png" alt="VST3 – Login Screen" width="49%"/>
