@@ -2852,7 +2852,7 @@ const MobileBottomNav = ({
         
         {!isAuthenticated && (
           <button
-            onClick={() => window.location.href = '/auth'}
+            onClick={() => window.location.href = 'openAuth("signup")'}
             className="flex flex-col items-center p-2 text-gray-600 hover:text-gray-900 transition-colors"
           >
             <User className="w-5 h-5 mb-1" />
