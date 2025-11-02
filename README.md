@@ -27,14 +27,14 @@
 
 <!-- Row 2: Mobile Screenshots (vertical) -->
 <p align="center">
-  <a href="images/mobile_1.png" target="_blank">
-    <img src="images/mobile_1.png" alt="Mobile Screen 1" width="32%"/>
+  <a href="images/mobile_1.jpg" target="_blank">
+    <img src="images/mobile_1.jpg" alt="Mobile Screen 1" width="32%"/>
   </a>
-  <a href="images/mobile_2.png" target="_blank">
-    <img src="images/mobile_2.png" alt="Mobile Screen 2" width="32%"/>
+  <a href="images/mobile_2.jpg" target="_blank">
+    <img src="images/mobile_2.jpg" alt="Mobile Screen 2" width="32%"/>
   </a>
-  <a href="images/mobile_3.png" target="_blank">
-    <img src="images/mobile_3.png" alt="Mobile Screen 3" width="32%"/>
+  <a href="images/mobile_3.jpg" target="_blank">
+    <img src="images/mobile_3.jpg" alt="Mobile Screen 3" width="32%"/>
   </a>
 </p>
 
