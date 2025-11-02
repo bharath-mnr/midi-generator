@@ -213,8 +213,7 @@ GET   /api/user/generation-limit
 GET   /api/midi/generations     # paginated history
 GET   /api/midi-files/{name}    # secure file proxy
 GET   /api/pricing/plans        # subscription tiers
-🤝 Contributing
-(unchanged – see original docs)
+
 🧪 Technical Challenges Solved
 NEW – Java layer additions:
 Distributed Rate-Limiting: In-memory token bucket with header enrichment
@@ -222,6 +221,22 @@ Optimistic Lock Retry: Pessimistic write locks on user row to eliminate daily-co
 SendGrid HTTP API: SMTP-port-agnostic email delivery for cloud platforms
 Zero-downtime Daily Reset: Single SQL UPDATE at 00:00 UTC, no user interruption
 Horizontal Scalability: Stateless Node bridge + shared-nothing Java instances behind any LB
+
+## 🎬 Reference Demo Track  
+The orchestral build-up below was generated with the prompt shown earlier.  
+
+https://github.com/bharath-mnr/midi-generator/assets/video.mp4
+
+4/4
+Tempo: 85
+Length: 45 bars
+
+The track should be in 4/4 time signature with a tempo of 85.
+It should be a progressive, orchestral-style piece that builds in intensity over time, starting with lower velocities and simpler patterns, gradually increasing in complexity and dynamics to a climax, and then fading out towards the end.
+Use sustains (~) to create legato phrases and ensure the note velocities follow the dynamic ranges (e.g., ppp to fff).
+Include multiple bars (e.g., 45 bars) with varying chord progressions and arpeggiated patterns, focusing on bass notes (e.g., D2, A2) and higher registers (e.g., D6, A5) for texture.
+Avoid including the Key metadata to keep it neutral, and strictly adhere to the spacing rules for 4/4 time.
+
 📝 License
 MIT – see LICENSE file.
 🎯 Roadmap
