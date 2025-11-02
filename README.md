@@ -225,12 +225,7 @@ Horizontal Scalability: Stateless Node bridge + shared-nothing Java instances be
 ## 🎬 Reference Demo Track  
 The orchestral build-up below was generated with the prompt shown earlier.  
 
-<div align="center">
-  <a href="https://www.youtube.com/watch?v=kKulnGoYf9c">
-    <img src="https://img.youtube.com/vi/kKulnGoYf9c/maxresdefault.jpg" alt="Watch Demo" width="80%"/>
-  </a>
-  <p><em>▶️ Click to watch the demo on YouTube</em></p>
-</div>
+[![Video Demo](https://img.youtube.com/vi/kKulnGoYf9c/maxresdefault.jpg)](https://www.youtube.com/watch?v=kKulnGoYf9c)
 
 4/4
 Tempo: 85
