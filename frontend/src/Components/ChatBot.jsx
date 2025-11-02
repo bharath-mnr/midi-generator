@@ -2816,12 +2816,62 @@ const useServerStatus = () => {
   return { status, retry: () => serverStatusService.checkHealth() };
 };
 
+// // Mobile Bottom Navigation Bar
+// const MobileBottomNav = ({ 
+//   onNewChat, 
+//   onToggleSidebar, 
+//   onShowVST, 
+//   isAuthenticated 
+// }) => {
+//   return (
+//     <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 z-40">
+//       <div className="flex justify-around items-center">
+//         <button
+//           onClick={onToggleSidebar}
+//           className="flex flex-col items-center p-2 text-gray-600 hover:text-gray-900 transition-colors"
+//         >
+//           <Menu className="w-5 h-5 mb-1" />
+//           <span className="text-xs">Chats</span>
+//         </button>
+        
+//         <button
+//           onClick={onNewChat}
+//           className="flex flex-col items-center p-2 text-gray-600 hover:text-gray-900 transition-colors"
+//         >
+//           <Plus className="w-5 h-5 mb-1" />
+//           <span className="text-xs">New</span>
+//         </button>
+        
+//         <button
+//           onClick={onShowVST}
+//           className="flex flex-col items-center p-2 text-gray-600 hover:text-gray-900 transition-colors"
+//         >
+//           <Monitor className="w-5 h-5 mb-1" />
+//           <span className="text-xs">VST</span>
+//         </button>
+        
+//         {!isAuthenticated && (
+//           <button
+//             onClick={() => window.location.href = '/login'}
+//             className="flex flex-col items-center p-2 text-gray-600 hover:text-gray-900 transition-colors"
+//           >
+//             <User className="w-5 h-5 mb-1" />
+//             <span className="text-xs">Login</span>
+//           </button>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+
 // Mobile Bottom Navigation Bar
 const MobileBottomNav = ({ 
   onNewChat, 
   onToggleSidebar, 
   onShowVST, 
-  isAuthenticated 
+  isAuthenticated,
+  onOpenAuth 
 }) => {
   return (
     <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 z-40">
@@ -2852,7 +2902,7 @@ const MobileBottomNav = ({
         
         {!isAuthenticated && (
           <button
-            onClick={() => window.location.href = 'openAuth("signup")'}
+            onClick={() => onOpenAuth('login')}
             className="flex flex-col items-center p-2 text-gray-600 hover:text-gray-900 transition-colors"
           >
             <User className="w-5 h-5 mb-1" />
