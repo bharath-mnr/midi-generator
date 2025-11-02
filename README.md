@@ -227,6 +227,10 @@ The orchestral build-up below was generated with the prompt shown earlier.
 
 https://github.com/user-attachments/assets/676adc35-99de-48c4-b659-5c4df1a5c79a
 
+### Audio Only
+🔊 [Download MP3](https://github.com/user-attachments/files/23290756/audio.mp3)
+
+
 4/4
 Tempo: 85
 Length: 45 bars
