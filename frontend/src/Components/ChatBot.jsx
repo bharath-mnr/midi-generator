@@ -2355,7 +2355,7 @@ const ChatBot = ({ isAuthenticated, user, onOpenAuth, onNavigate, onLogout }) =>
       >
         <div className="flex flex-col h-full w-full">
           {/* Header */}
-          <div className="flex items-center justify-between p-3 lg:p-4 border-b border-gray-200">
+          <div className="flex items-center justify-between p-3 lg:p-4  border-gray-200">
             {!sidebarCollapsed && (
               <h2 className="text-lg font-bold text-gray-900 truncate">MIDI Generator</h2>
             )}
@@ -2427,7 +2427,7 @@ const ChatBot = ({ isAuthenticated, user, onOpenAuth, onNavigate, onLogout }) =>
           </div>
 
           {/* User Section */}
-          <div className="p-3 border-t border-gray-200">
+          <div className="p-3  border-gray-200">
             {isAuthenticated ? (
               <div className="relative" ref={userMenuRef}>
                 <button
@@ -2589,7 +2589,7 @@ const ChatBot = ({ isAuthenticated, user, onOpenAuth, onNavigate, onLogout }) =>
         )}
 
         {/* Header */}
-        <header className="flex items-center justify-between px-3 py-3 bg-white border-b border-gray-200 safe-area-top">
+        <header className="flex items-center justify-between px-3 py-3 bg-white border-gray-200 safe-area-top">
           <div className="flex items-center space-x-3">
             <button
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -2633,7 +2633,7 @@ const ChatBot = ({ isAuthenticated, user, onOpenAuth, onNavigate, onLogout }) =>
                   or upload a MIDI file to transform it
                 </p>
                 
-                {serverStatus !== 'healthy' && (
+                {/* {serverStatus !== 'healthy' && (
                   <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3 max-w-md w-full">
                     <div className="flex items-start space-x-2">
                       <Loader2 className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0 animate-spin" />
@@ -2647,9 +2647,9 @@ const ChatBot = ({ isAuthenticated, user, onOpenAuth, onNavigate, onLogout }) =>
                       </div>
                     </div>
                   </div>
-                )}
+                )} */}
                 
-                {isAuthenticated && !emailVerified && (
+                {/* {isAuthenticated && !emailVerified && (
                   <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-3 max-w-md w-full">
                     <div className="flex items-start space-x-2">
                       <Mail className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
@@ -2663,7 +2663,7 @@ const ChatBot = ({ isAuthenticated, user, onOpenAuth, onNavigate, onLogout }) =>
                       </div>
                     </div>
                   </div>
-                )}
+                )} */}
               </div>
             ) : (
               <div className="space-y-3 px-2 sm:px-4">
@@ -2696,7 +2696,7 @@ const ChatBot = ({ isAuthenticated, user, onOpenAuth, onNavigate, onLogout }) =>
         </main>
 
         {/* Input Area */}
-        <footer className={`bg-white border-t border-gray-200 ${
+        <footer className={`bg-white  border-gray-200 ${
           isMobile ? 'pb-20' : 'pb-3'
         } safe-area-bottom`}>
           <div className="max-w-3xl mx-auto px-3">
