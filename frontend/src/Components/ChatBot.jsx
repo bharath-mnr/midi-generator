@@ -1506,7 +1506,7 @@ const MessageBubble = ({ message, onDownload }) => {
                     <p className="text-sm font-semibold text-gray-900 truncate">MIDI File Ready</p>
                     <p className="text-xs text-gray-600 truncate">
                       {message.barCount} bars • {
-                        (message.source === 'vst' || source === 'VST') 
+                        (message.source === 'vst' || message.source === 'VST')
                           ? 'VST Plugin' 
                           : 'Web'
                       }
