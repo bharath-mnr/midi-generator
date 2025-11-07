@@ -582,7 +582,7 @@ const ChatBot = ({ isAuthenticated, user, onOpenAuth, onNavigate, onLogout }) =>
       return;
     }
 
-    if (inputMessage.length > 1000) {
+    if (inputMessage.length > 10000) {
       addErrorMessage('❌ Description too long. Please keep it under 1000 characters.');
       return;
     }
