@@ -9,7 +9,7 @@ import lombok.*;
 public class GenerationRequest {
 
     @NotBlank(message = "Message is required")
-    @Size(min = 1, max = 1000, message = "Message must be between 1 and 1000 characters")
+    @Size(min = 1, max = 10000, message = "Message must be between 1 and 10000 characters")
     private String message;
 
     @Pattern(regexp = "low|medium|high", message = "Creativity level must be: low, medium, or high")
