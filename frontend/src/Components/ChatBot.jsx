@@ -583,7 +583,7 @@ const ChatBot = ({ isAuthenticated, user, onOpenAuth, onNavigate, onLogout }) =>
     }
 
     if (inputMessage.length > 10000) {
-      addErrorMessage('❌ Description too long. Please keep it under 1000 characters.');
+      addErrorMessage('❌ Description too long. Please keep it under 10000 characters.');
       return;
     }
 
@@ -1268,7 +1268,7 @@ const ChatBot = ({ isAuthenticated, user, onOpenAuth, onNavigate, onLogout }) =>
                 
                 {inputMessage.length > 800 && (
                   <div className="absolute bottom-2 right-2 text-xs text-gray-500 bg-white px-1 rounded">
-                    {inputMessage.length}/1000
+                    {inputMessage.length}/10000
                   </div>
                 )}
               </div>
