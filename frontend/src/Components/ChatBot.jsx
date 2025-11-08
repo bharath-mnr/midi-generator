@@ -3035,7 +3035,7 @@ const downloadMidi = async (midiUrl) => {
               </p>
             )}
             
-            {!emailVerified && isAuthenticated && (
+            {/* {!emailVerified && isAuthenticated && (
               <div className="flex items-center justify-center space-x-2 mt-2 text-xs text-yellow-700 bg-yellow-50 px-3 py-2 rounded-lg border border-yellow-200">
                 <Mail className="w-3.5 h-3.5 flex-shrink-0" />
                 <span className="text-center">Verify your email to start generating music</span>
@@ -3048,7 +3048,8 @@ const downloadMidi = async (midiUrl) => {
                 <span className="text-center">Server is starting up... This takes 1-3 minutes for first visit</span>
               </div>
             )}
-            
+             */}
+             
             {inputMessage.length > 0 && inputMessage.length < 3 && (
               <p className="text-xs text-orange-600 mt-2 text-center">
                 ⚠️ Please provide a more detailed description
