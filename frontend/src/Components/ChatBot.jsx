@@ -2646,7 +2646,7 @@ const downloadMidi = async (midiUrl) => {
       >
         <div className="flex flex-col h-full w-full">
           {/* Header */}
-          <div className="flex items-center justify-between p-3 lg:p-4 border-b border-gray-200">
+          <div className="flex items-center justify-between p-3 lg:p-4  border-gray-200">
             {!sidebarCollapsed && (
               <h2 className="text-lg font-bold text-gray-900 truncate">MIDI Generator</h2>
             )}
@@ -2718,7 +2718,7 @@ const downloadMidi = async (midiUrl) => {
           </div>
 
           {/* User Section */}
-          <div className="p-3 border-t border-gray-200">
+          <div className="p-3  border-gray-200">
             {isAuthenticated ? (
               <div className="relative" ref={userMenuRef}>
                 <button
@@ -2880,7 +2880,7 @@ const downloadMidi = async (midiUrl) => {
         )}
 
         {/* Header */}
-        <header className="flex items-center justify-between px-3 py-3 bg-white border-b border-gray-200 safe-area-top">
+        <header className="flex items-center justify-between px-3 py-3 bg-white border-gray-200 safe-area-top">
           <div className="flex items-center space-x-3">
             <button
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -2955,7 +2955,7 @@ const downloadMidi = async (midiUrl) => {
         </main>
 
         {/* Input Area */}
-        <footer className={`bg-white border-t border-gray-200 ${
+        <footer className={`bg-white border-gray-200 ${
           isMobile ? 'pb-20' : 'pb-3'
         } safe-area-bottom`}>
           <div className="max-w-3xl mx-auto px-3">
