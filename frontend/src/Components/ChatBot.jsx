@@ -2365,101 +2365,168 @@ const ChatBot = ({ isAuthenticated, user, onOpenAuth, onNavigate, onLogout }) =>
   };
 
   // ✅ FIXED DOWNLOAD FUNCTION
-  const downloadMidi = async (midiUrl) => {
+const downloadMidi = async (midiUrl) => {
+  try {
+    console.log('🎵 Starting MIDI download:', midiUrl);
+    
+    if (!midiUrl) {
+      addErrorMessage('❌ No MIDI URL available');
+      return;
+    }
+
+    // Show loading indicator
+    addSystemMessage('⏳ Downloading MIDI file...');
+
+    // ✅ METHOD 1: Use XMLHttpRequest for better control
+    const downloadWithXHR = () => {
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', midiUrl, true);
+        xhr.responseType = 'blob';
+        
+        xhr.onload = function() {
+          if (xhr.status === 200) {
+            resolve(xhr.response);
+          } else {
+            reject(new Error(`Download failed: ${xhr.status}`));
+          }
+        };
+        
+        xhr.onerror = function() {
+          reject(new Error('Network error during download'));
+        };
+        
+        xhr.send();
+      });
+    };
+
     try {
-      console.log('🎵 Starting MIDI download:', midiUrl);
+      // Download using XHR
+      const blob = await downloadWithXHR();
       
-      if (!midiUrl) {
-        addErrorMessage('❌ No MIDI URL available');
-        return;
+      // Verify it's a valid size
+      if (blob.size < 14) {
+        throw new Error('Downloaded file is too small to be a valid MIDI');
       }
 
+      console.log(`✅ Downloaded ${blob.size} bytes`);
+
+      // Extract filename from URL
+      let filename = 'composition.mid';
+      const urlParts = midiUrl.split('/');
+      const urlFilename = urlParts[urlParts.length - 1];
+      if (urlFilename && urlFilename.match(/\.(mid|midi)$/i)) {
+        filename = urlFilename;
+      } else {
+        filename = `composition_${Date.now()}.mid`;
+      }
+
+      // ✅ Create blob URL and trigger download
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      
+      // CRITICAL: Set these properties
+      link.href = blobUrl;
+      link.download = filename;
+      link.target = '_self'; // Don't open new tab
+      link.style.display = 'none';
+      
+      // Add to DOM temporarily
+      document.body.appendChild(link);
+      
+      // Trigger click programmatically
+      link.click();
+      
+      // Clean up after a short delay
+      setTimeout(() => {
+        if (link.parentNode) {
+          document.body.removeChild(link);
+        }
+        window.URL.revokeObjectURL(blobUrl);
+        console.log('✅ Download complete, cleaned up');
+      }, 100);
+
+      // Remove loading message
+      setTimeout(() => {
+        setMessages(prev => prev.filter(msg => msg.content !== '⏳ Downloading MIDI file...'));
+      }, 1000);
+
+    } catch (xhrError) {
+      console.error('❌ XHR download failed:', xhrError);
+      
+      // ✅ FALLBACK METHOD 2: Try fetch with arraybuffer
       try {
+        console.log('🔄 Trying fetch fallback...');
+        
         const response = await fetch(midiUrl, {
           method: 'GET',
           headers: {
-            'Accept': 'audio/midi,application/octet-stream'
-          }
+            'Accept': 'application/octet-stream,audio/midi,*/*'
+          },
+          credentials: 'omit'
         });
 
         if (!response.ok) {
-          throw new Error(`Download failed: ${response.status} ${response.statusText}`);
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        // Get blob from response
-        const blob = await response.blob();
+        const arrayBuffer = await response.arrayBuffer();
+        const blob = new Blob([arrayBuffer], { type: 'application/octet-stream' });
         
-        // Verify it's a MIDI file
         if (blob.size < 14) {
-          throw new Error('Downloaded file is too small to be a valid MIDI');
+          throw new Error('File too small');
         }
 
-        // Extract filename from URL or Content-Disposition header
+        // Extract filename
         let filename = 'composition.mid';
-        
         const contentDisposition = response.headers.get('Content-Disposition');
         if (contentDisposition) {
-          const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-          if (filenameMatch && filenameMatch[1]) {
-            filename = filenameMatch[1].replace(/['"]/g, '');
+          const matches = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+          if (matches && matches[1]) {
+            filename = matches[1].replace(/['"]/g, '');
           }
         } else {
-          // Extract from URL
           const urlParts = midiUrl.split('/');
-          const urlFilename = urlParts[urlParts.length - 1];
-          if (urlFilename && urlFilename.match(/\.(mid|midi)$/i)) {
-            filename = urlFilename;
-          } else {
-            filename = `composition_${Date.now()}.mid`;
-          }
+          filename = urlParts[urlParts.length - 1] || `composition_${Date.now()}.mid`;
         }
 
-        console.log(`✅ Downloaded ${blob.size} bytes, saving as: ${filename}`);
-
-        // Create download link
-        const blobUrl = window.URL.createObjectURL(blob);
+        // Download
+        const blobUrl = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = blobUrl;
         link.download = filename;
-        link.style.display = 'none';
-        
-        document.body.appendChild(link);
         link.click();
         
-        // Cleanup
-        setTimeout(() => {
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(blobUrl);
-        }, 100);
-        console.log('✅ Download triggered successfully');
-
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+        
+        setMessages(prev => prev.filter(msg => msg.content !== '⏳ Downloading MIDI file...'));
+        
       } catch (fetchError) {
-        console.error('❌ Fetch error:', fetchError);
+        console.error('❌ Fetch fallback failed:', fetchError);
         
-        // ✅ FALLBACK: Try direct link as last resort
-        console.log('🔄 Trying fallback download method...');
+        // ✅ FINAL FALLBACK: Open in new tab with download suggestion
+        console.log('🔄 Using final fallback (new tab)...');
         
-        const link = document.createElement('a');
-        link.href = midiUrl;
-        link.download = `composition_${Date.now()}.mid`;
-        link.target = '_blank'; // Open in new tab if download fails
-        link.style.display = 'none';
+        // Try to open in new tab
+        const newWindow = window.open(midiUrl, '_blank');
         
-        document.body.appendChild(link);
-        link.click();
+        if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+          // Popup blocked
+          addErrorMessage('❌ Download blocked by browser. Please allow popups or try again.');
+        } else {
+          addSystemMessage('⚠️ Download opened in new tab. If file displays instead of downloading, right-click and select "Save As".');
+        }
         
-        setTimeout(() => {
-          document.body.removeChild(link);
-        }, 100);
-        
-        addSystemMessage('⚠️ Download started. If it opens in browser instead, right-click and "Save As"');
+        setMessages(prev => prev.filter(msg => msg.content !== '⏳ Downloading MIDI file...'));
       }
-    } catch (error) {
-      console.error('❌ Download failed:', error);
-      addErrorMessage(`❌ Download failed: ${error.message}. Please try again or contact support.`);
     }
-  };
 
+  } catch (error) {
+    console.error('❌ Download completely failed:', error);
+    setMessages(prev => prev.filter(msg => msg.content !== '⏳ Downloading MIDI file...'));
+    addErrorMessage(`❌ Download failed: ${error.message}. Please try: 1) Right-click the download button and select "Save link as", or 2) Contact support.`);
+  }
+};
   const getTierIcon = (tier) => {
     switch (tier) {
       case 'FREE': return CheckCircle;

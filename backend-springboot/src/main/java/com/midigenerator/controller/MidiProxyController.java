@@ -185,6 +185,20 @@ public class MidiProxyController {
     private String nodeServerUrl;
 
     /**
+     * ✅ Handle CORS preflight requests
+     */
+    @RequestMapping(value = "/{filename:.+}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> handleOptions(@PathVariable String filename) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+        headers.set(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "GET, OPTIONS");
+        headers.set(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "Content-Type, Accept");
+        headers.set(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Content-Disposition, Content-Type, Content-Length");
+        headers.set(HttpHeaders.ACCESS_CONTROL_MAX_AGE, "3600");
+        return ResponseEntity.ok().headers(headers).build();
+    }
+
+    /**
      * ✅ FIXED: Properly handle MIDI file downloads
      */
     @GetMapping("/{filename:.+}")
@@ -277,18 +291,29 @@ public class MidiProxyController {
 
                 ByteArrayResource resource = new ByteArrayResource(midiData);
 
-                // ✅ FIX: Proper headers for download (not inline display)
+                // ✅ FIX: Force download with proper headers
                 HttpHeaders responseHeaders = new HttpHeaders();
-                responseHeaders.setContentType(MediaType.parseMediaType("audio/midi"));
+                
+                // Use application/octet-stream to force download
+                responseHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
                 responseHeaders.setContentLength(midiData.length);
-                responseHeaders.setContentDisposition(
-                    ContentDisposition.attachment()
-                        .filename(filename)
-                        .build()
+                
+                // Set Content-Disposition to force download
+                responseHeaders.set(
+                    HttpHeaders.CONTENT_DISPOSITION,
+                    "attachment; filename=\"" + filename + "\""
                 );
-                responseHeaders.setCacheControl(CacheControl.noCache());
+                
+                // CORS headers
                 responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
-                responseHeaders.set(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Content-Disposition");
+                responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "GET, OPTIONS");
+                responseHeaders.set(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, 
+                    "Content-Disposition, Content-Type, Content-Length");
+                responseHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "false");
+                
+                // Cache control
+                responseHeaders.setCacheControl(CacheControl.noCache().mustRevalidate());
+                responseHeaders.setPragma("no-cache");
 
                 return ResponseEntity.ok()
                         .headers(responseHeaders)
