@@ -114,10 +114,12 @@
 
 
 //midigenerator/config/SecurityConfig.java
+//midigenerator/config/SecurityConfig.java
 package com.midigenerator.config;
 
 import com.midigenerator.security.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -141,6 +143,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -160,7 +163,6 @@ public class SecurityConfig {
     @Value("${midi.generator.url:http://localhost:5000/api}")
     private String midiGeneratorUrl;
 
-    // ✅ NEW: Base URL for Node.js backend (without /api)
     @Value("${midi.generator.base-url:http://localhost:5000}")
     private String midiGeneratorBaseUrl;
 
@@ -190,7 +192,7 @@ public class SecurityConfig {
         List<String> allowedOrigins = Stream.of(
                 frontendUrl,
                 backendUrl,
-                midiGeneratorUrl.replace("/api", ""), // Remove /api suffix
+                midiGeneratorUrl.replace("/api", ""),
                 midiGeneratorBaseUrl,
                 // Development URLs (always include for local testing)
                 "http://localhost:5173",
@@ -205,6 +207,7 @@ public class SecurityConfig {
 
         configuration.setAllowedOrigins(allowedOrigins);
 
+        // ✅ Allow all standard HTTP methods
         configuration.setAllowedMethods(Arrays.asList(
                 "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"
         ));
@@ -216,27 +219,34 @@ public class SecurityConfig {
                 "X-Requested-With",
                 "Accept",
                 "Origin",
+                "Access-Control-Request-Method",
+                "Access-Control-Request-Headers",
                 "X-CSRF-TOKEN"
         ));
 
+        // ✅ Expose headers that the frontend needs to read
         configuration.setExposedHeaders(Arrays.asList(
                 "Content-Disposition",
                 "Content-Type",
                 "Content-Length",
                 "Authorization",
-                "X-CSRF-TOKEN"
+                "X-CSRF-TOKEN",
+                "Access-Control-Allow-Origin",
+                "Access-Control-Allow-Credentials"
         ));
 
-        // ✅ Allow credentials with specific origins
+        // ✅ Allow credentials (cookies, authorization headers)
         configuration.setAllowCredentials(true);
+        
+        // ✅ Cache preflight response for 1 hour
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
 
         // ✅ Log configured CORS origins on startup
-        System.out.println("✅ CORS Configured with origins:");
-        allowedOrigins.forEach(origin -> System.out.println("   - " + origin));
+        log.info("✅ CORS Configured with origins:");
+        allowedOrigins.forEach(origin -> log.info("   - {}", origin));
 
         return source;
     }
@@ -247,25 +257,32 @@ public class SecurityConfig {
                 // ✅ Disable CSRF for stateless JWT API
                 .csrf(csrf -> csrf.disable())
 
+                // ✅ CRITICAL: Enable CORS with our configuration
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                
+                // ✅ Stateless session management
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                
+                // ✅ Configure authorization rules
                 .authorizeHttpRequests(auth -> auth
-                        // ✅ Public endpoints
+                        // Public endpoints - NO authentication required
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/health").permitAll()
                         .requestMatchers("/api/pricing/plans").permitAll()
-
-                        // ✅ CRITICAL: Allow MIDI file downloads without authentication
                         .requestMatchers("/api/midi-files/**").permitAll()
-
                         .requestMatchers("/h2-console/**").permitAll()
-
-                        // ✅ All other endpoints require authentication
+                        
+                        // All other endpoints require authentication
                         .anyRequest().authenticated()
                 )
+                
+                // ✅ Allow H2 console to use frames
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
 
+        // ✅ Set authentication provider
         http.authenticationProvider(authenticationProvider());
+        
+        // ✅ Add JWT filter before username/password authentication filter
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
