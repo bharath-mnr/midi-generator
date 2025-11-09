@@ -2975,7 +2975,7 @@ const VSTDownloadModal = ({ onClose }) => {
           </div>
 
           <div className="space-y-3 mb-4">
-            
+            <a
               href="/vst/MidiGenerator.vst3.rar"
               download
               className="w-full flex items-center space-x-3 px-4 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-all text-sm sm:text-base"
