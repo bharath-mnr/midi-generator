@@ -582,8 +582,6 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 
 <p align="center">
-  <strong>Made with ❤️</strong>
-  <br>
   <sub>Enjoy composing! 🎼</sub>
 </p>
 
