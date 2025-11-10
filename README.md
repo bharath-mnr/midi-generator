@@ -168,36 +168,6 @@ clarity, warmth, and melodic dominance across all 33 bars.
 
 **[https://midi-generator-seven.vercel.app/](https://midi-generator-seven.vercel.app/)**
 
----
-
-## ⚡ Quick Start (5 minutes)
-
-Get up and running with just the Node.js bridge for basic testing:
-
-```bash
-# 1. Clone repository
-git clone https://github.com/bharath-mnr/ai-midi-generator
-cd ai-midi-generator
-
-# 2. Install dependencies
-cd backend && npm install
-
-# 3. Set your Gemini API key
-echo "GEMINI_API_KEY=your_key_here" > .env
-echo "PORT=5000" >> .env
-
-# 4. Start Node.js bridge
-npm run dev
-
-# 5. In a new terminal, start frontend
-cd ../frontend && npm install && npm run dev
-```
-
-**Access at:** http://localhost:5173
-
-> **Note:** This runs the stateless Node.js bridge only (no auth, history, or limits). For full enterprise features, follow the [Local Development](#-local-development) guide below.
-
----
 
 ## 🛠️ Tech Stack
 
@@ -270,126 +240,6 @@ cd ../frontend && npm install && npm run dev
 - **Google Gemini API Key** ([Get one here](https://makersuite.google.com/app/apikey))
 - **Git**
 
----
-
-## 🏃 Local Development
-
-### 1. Clone Repository
-```bash
-git clone https://github.com/bharath-mnr/ai-midi-generator
-cd ai-midi-generator
-```
-
-### 2. Install Dependencies
-```bash
-# Node.js layer
-cd backend && npm install
-
-# Java layer
-cd ../midigenerator && mvn clean install -DskipTests
-```
-
-### 3. Configure Environment Variables
-
-**Node.js bridge** (`backend/.env`):
-```env
-GEMINI_API_KEY=your_google_gemini_api_key_here
-PORT=5000
-```
-
-**Java API** (`midigenerator/src/main/resources/application-local.properties`):
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/midi_db
-spring.datasource.username=postgres
-spring.datasource.password=postgres
-jwt.secret=change-me-in-production
-```
-
-**Frontend** (`frontend/.env`):
-```env
-VITE_API_URL=http://localhost:8080/api
-```
-
-### 4. Run Development Stack
-
-```bash
-# Terminal 1 – PostgreSQL (Docker one-liner)
-docker run --name midi-postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:15
-
-# Terminal 2 – Java backend
-cd midigenerator && mvn spring-boot:run -Dspring.profiles.active=local
-
-# Terminal 3 – Node.js bridge
-cd backend && npm run dev
-
-# Terminal 4 – React frontend
-cd frontend && npm run dev
-```
-
-### Access Points:
-- **React UI:** http://localhost:5173
-- **Java API:** http://localhost:8080/api
-- **Node Bridge:** http://localhost:5000/api
-- **Swagger UI:** http://localhost:8080/swagger-ui.html
-
----
-
-## 📊 API Endpoints
-
-### Node.js Stateless Bridge (Port 5000)
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/chat` | Generate MIDI from text prompt |
-| `POST` | `/api/upload-midi` | Parse MIDI file to text notation |
-| `GET` | `/api/health` | Service health check |
-
-### Java Spring Boot API (Port 8080)
-
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| `POST` | `/api/auth/signup` | ❌ | User registration |
-| `POST` | `/api/auth/login` | ❌ | JWT authentication |
-| `POST` | `/api/auth/refresh` | ❌ | Refresh access token |
-| `POST` | `/api/auth/verify-email` | ❌ | Email confirmation |
-| `POST` | `/api/midi/generate` | ✅ | Generate MIDI (proxies to Node) |
-| `GET` | `/api/user/profile` | ✅ | User dashboard data |
-| `GET` | `/api/user/generation-limit` | ✅ | Check daily limit status |
-| `GET` | `/api/midi/generations` | ✅ | Paginated generation history |
-| `GET` | `/api/midi-files/{name}` | ✅ | Secure MIDI file download |
-| `GET` | `/api/pricing/plans` | ❌ | Available subscription tiers |
-
-🔑 **Auth Required** = Include JWT token in `Authorization: Bearer <token>` header
-
----
-
-## 🎵 MIDI Text Notation Format
-
-Our custom text format supports professional MIDI composition:
-
-### Basic Syntax
-```
-C4(100)[1] = Note C at octave 4, velocity 100, duration 1 beat
-D4(80)[0.5] = Note D at octave 4, velocity 80, duration 0.5 beats
-. = Rest
-~ = Sustain/hold previous note
-```
-
-### Example: Simple Melody
-```
-Bar 1: C4(90)[1] E4(95)[1] G4(100)[1] C5(105)[1]
-Bar 2: B4(100)[2] A4(95)[2]
-Bar 3: G4(90)[1] E4(85)[1] C4(80)[2]
-```
-
-### Advanced Features
-- **Multiple voices:** Separate with commas
-- **Chords:** Use `+` between notes
-- **Dynamics:** Velocity 0-127
-- **Tempo:** Specify BPM
-- **Time signatures:** 4/4, 3/4, 6/8, etc.
-
----
 
 ## 🎹 Usage Examples
 
@@ -418,29 +268,6 @@ Use cinematic orchestral voicing throughout.
 4. Generates new composition matching your reference style
 ```
 
----
-
-## 🔧 Configuration
-
-### Subscription Tiers
-
-| Tier | Daily Limit | Features |
-|------|-------------|----------|
-| **Free** | 5 generations | Basic MIDI generation |
-| **Pro** | 50 generations | Priority queue, style learning |
-| **Premium** | Unlimited | VST plugin, API access, no watermark |
-
-### Rate Limiting
-- **Free tier:** 5 requests per minute
-- **Pro tier:** 20 requests per minute
-- **Premium tier:** 100 requests per minute
-
-### File Limits
-- **Max MIDI upload:** 5MB
-- **Max bars:** 200
-- **Max simultaneous voices:** 16
-
----
 
 ## 🧪 Technical Challenges Solved
 
@@ -753,51 +580,6 @@ The piece never truly "ends" - it dissolves, suggesting the journey continues be
 
 MIT License - see [LICENSE](LICENSE) file for details.
 
----
-
-## 🎯 Roadmap
-
-| Status | Feature | Priority | Notes |
-|--------|---------|----------|-------|
-| 🚧 | Stripe Payment Integration | **High** | Java layer ready |
-| 🔜 | VST3 Plugin Public Beta | **High** | Works via Node bridge |
-| 📋 | Admin Dashboard | **Medium** | Spring Actuator + custom endpoints |
-| 💡 | WebSocket Real-time Progress | **Medium** | Generation status updates |
-| 📱 | Native Mobile Apps | **Low** | Consumes same Java API |
-| 💡 | Multi-instrument Support | **Future** | Beyond piano |
-| 💡 | Collaborative Editing | **Future** | Real-time co-composition |
-
-**Legend:** ✅ Done • 🚧 In Progress • 🔜 Next • 📋 Planned • 💡 Considering
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## 💬 Support
-
-- **Issues:** [GitHub Issues](https://github.com/bharath-mnr/ai-midi-generator/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/bharath-mnr/ai-midi-generator/discussions)
-- **Email:** support@midiaistudio.com
-
----
-
-## 🙏 Acknowledgments
-
-- Google Gemini AI for powerful music generation capabilities
-- The open-source music technology community
-- All contributors and beta testers
-
----
 
 <p align="center">
   <strong>Made with ❤️</strong>
