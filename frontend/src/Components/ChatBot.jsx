@@ -1104,7 +1104,7 @@ const ChatBot = ({ isAuthenticated, user, onOpenAuth, onNavigate, onLogout }) =>
             >
               <Menu className="w-5 h-5" />
             </button>
-            <h1 className="text-lg font-bold text-gray-900 truncate">AI Music Generator</h1>
+            {/* <h1 className="text-lg font-bold text-gray-900 truncate">AI Music Generator</h1> */}
           </div>
           
           <button
